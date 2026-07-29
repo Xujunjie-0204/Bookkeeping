@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.bookkeeping.purchase.mapper.BizPurchaseItemMapper">
+    <insert id="insert" parameterType="com.example.bookkeeping.purchase.entity.BizPurchaseItem" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO biz_purchase_item (
+            purchase_id, product_id, condition_desc, device_no, quantity, unit_price,
+            total_amount, check_status, remark, created_at, updated_at, deleted
+        ) VALUES (
+            #{purchaseId}, #{productId}, #{conditionDesc}, #{deviceNo}, #{quantity}, #{unitPrice},
+            #{totalAmount}, #{checkStatus}, #{remark}, NOW(), NOW(), 0
+        )
+    </insert>
+
+    <update id="deleteByPurchaseId">
+        UPDATE biz_purchase_item
+        SET deleted = 1,
+            updated_at = NOW()
+        WHERE purchase_id = #{purchaseId}
+          AND deleted = 0
+    </update>
+</mapper>

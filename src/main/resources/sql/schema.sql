@@ -46,7 +46,10 @@ CREATE TABLE IF NOT EXISTS biz_purchase (
   platform VARCHAR(30) NOT NULL COMMENT '采购平台',
   platform_order_no VARCHAR(80) DEFAULT NULL COMMENT '平台订单号',
   supplier_name VARCHAR(100) DEFAULT NULL COMMENT '供应商',
+  seller_account VARCHAR(100) DEFAULT NULL COMMENT '卖家账号/昵称',
   purchase_date DATE NOT NULL COMMENT '采购日期',
+  item_count INT NOT NULL DEFAULT 1 COMMENT '采购件数，二手单件采购通常为1',
+  purchase_status TINYINT NOT NULL DEFAULT 1 COMMENT '采购状态：1待到货，2已到货，3已取消',
   goods_amount DECIMAL(14,2) NOT NULL DEFAULT 0.00 COMMENT '商品总额',
   freight_amount DECIMAL(14,2) NOT NULL DEFAULT 0.00 COMMENT '采购运费',
   discount_amount DECIMAL(14,2) NOT NULL DEFAULT 0.00 COMMENT '优惠金额',
@@ -59,6 +62,7 @@ CREATE TABLE IF NOT EXISTS biz_purchase (
   invoice_file_name VARCHAR(200) DEFAULT NULL COMMENT '发票原始文件名',
   invoice_file_path VARCHAR(500) DEFAULT NULL COMMENT '发票附件路径',
   payment_method VARCHAR(50) DEFAULT NULL COMMENT '付款方式',
+  received_at DATETIME DEFAULT NULL COMMENT '到货时间',
   remark VARCHAR(500) DEFAULT NULL COMMENT '备注',
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
@@ -73,16 +77,20 @@ CREATE TABLE IF NOT EXISTS biz_purchase_item (
   id BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键',
   purchase_id BIGINT NOT NULL COMMENT '采购ID',
   product_id BIGINT NOT NULL COMMENT '商品ID',
+  condition_desc VARCHAR(200) DEFAULT NULL COMMENT '成色/瑕疵描述',
+  device_no VARCHAR(100) DEFAULT NULL COMMENT '单台设备唯一编号，如IMEI/序列号',
   quantity INT NOT NULL COMMENT '数量',
   unit_price DECIMAL(14,2) NOT NULL DEFAULT 0.00 COMMENT '单价',
   total_amount DECIMAL(14,2) NOT NULL DEFAULT 0.00 COMMENT '明细金额',
+  check_status TINYINT NOT NULL DEFAULT 0 COMMENT '验货状态：0未验货，1通过，2异常',
   remark VARCHAR(500) DEFAULT NULL COMMENT '备注',
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   deleted TINYINT NOT NULL DEFAULT 0 COMMENT '逻辑删除：0否，1是',
   PRIMARY KEY (id),
   KEY idx_biz_purchase_item_purchase_id (purchase_id),
-  KEY idx_biz_purchase_item_product_id (product_id)
+  KEY idx_biz_purchase_item_product_id (product_id),
+  KEY idx_biz_purchase_item_device_no (device_no)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='采购明细';
 
 CREATE TABLE IF NOT EXISTS biz_inventory_batch (
