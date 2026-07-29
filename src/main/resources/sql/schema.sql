@@ -1,0 +1,206 @@
+CREATE DATABASE IF NOT EXISTS bookkeeping
+  DEFAULT CHARACTER SET utf8mb4
+  COLLATE utf8mb4_general_ci;
+
+USE bookkeeping;
+
+CREATE TABLE IF NOT EXISTS sys_user (
+  id BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键',
+  username VARCHAR(50) NOT NULL COMMENT '用户名',
+  password VARCHAR(100) NOT NULL COMMENT 'BCrypt加密密码',
+  nickname VARCHAR(50) NOT NULL COMMENT '昵称',
+  phone VARCHAR(20) DEFAULT NULL COMMENT '手机号',
+  status TINYINT NOT NULL DEFAULT 1 COMMENT '状态：1启用，0停用',
+  last_login_at DATETIME DEFAULT NULL COMMENT '上次登录时间',
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  deleted TINYINT NOT NULL DEFAULT 0 COMMENT '逻辑删除：0否，1是',
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_sys_user_username (username)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='系统用户';
+
+CREATE TABLE IF NOT EXISTS biz_product (
+  id BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键',
+  product_code VARCHAR(50) NOT NULL COMMENT '商品编码',
+  product_name VARCHAR(100) NOT NULL COMMENT '商品名称',
+  category_name VARCHAR(50) DEFAULT NULL COMMENT '分类名称',
+  brand VARCHAR(50) DEFAULT NULL COMMENT '品牌',
+  model VARCHAR(80) DEFAULT NULL COMMENT '型号',
+  specification VARCHAR(200) DEFAULT NULL COMMENT '规格',
+  default_cost DECIMAL(14,2) NOT NULL DEFAULT 0.00 COMMENT '默认成本价',
+  default_sale_price DECIMAL(14,2) NOT NULL DEFAULT 0.00 COMMENT '默认销售价',
+  warning_stock INT NOT NULL DEFAULT 0 COMMENT '库存预警数量',
+  status TINYINT NOT NULL DEFAULT 1 COMMENT '状态：1启用，0停用',
+  remark VARCHAR(500) DEFAULT NULL COMMENT '备注',
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  deleted TINYINT NOT NULL DEFAULT 0 COMMENT '逻辑删除：0否，1是',
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_biz_product_code (product_code),
+  KEY idx_biz_product_name (product_name)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='商品资料';
+
+CREATE TABLE IF NOT EXISTS biz_purchase (
+  id BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键',
+  purchase_no VARCHAR(50) NOT NULL COMMENT '采购单号',
+  platform VARCHAR(30) NOT NULL COMMENT '采购平台',
+  platform_order_no VARCHAR(80) DEFAULT NULL COMMENT '平台订单号',
+  supplier_name VARCHAR(100) DEFAULT NULL COMMENT '供应商',
+  purchase_date DATE NOT NULL COMMENT '采购日期',
+  goods_amount DECIMAL(14,2) NOT NULL DEFAULT 0.00 COMMENT '商品总额',
+  freight_amount DECIMAL(14,2) NOT NULL DEFAULT 0.00 COMMENT '采购运费',
+  discount_amount DECIMAL(14,2) NOT NULL DEFAULT 0.00 COMMENT '优惠金额',
+  other_amount DECIMAL(14,2) NOT NULL DEFAULT 0.00 COMMENT '其他费用',
+  pay_amount DECIMAL(14,2) NOT NULL DEFAULT 0.00 COMMENT '实付金额',
+  invoice_status TINYINT NOT NULL DEFAULT 0 COMMENT '发票状态',
+  invoice_title VARCHAR(100) DEFAULT NULL COMMENT '发票抬头',
+  invoice_no VARCHAR(80) DEFAULT NULL COMMENT '发票号码',
+  invoice_date DATE DEFAULT NULL COMMENT '发票日期',
+  invoice_file_name VARCHAR(200) DEFAULT NULL COMMENT '发票原始文件名',
+  invoice_file_path VARCHAR(500) DEFAULT NULL COMMENT '发票附件路径',
+  payment_method VARCHAR(50) DEFAULT NULL COMMENT '付款方式',
+  remark VARCHAR(500) DEFAULT NULL COMMENT '备注',
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  deleted TINYINT NOT NULL DEFAULT 0 COMMENT '逻辑删除：0否，1是',
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_biz_purchase_no (purchase_no),
+  KEY idx_biz_purchase_platform_order_no (platform_order_no),
+  KEY idx_biz_purchase_date (purchase_date)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='采购主表';
+
+CREATE TABLE IF NOT EXISTS biz_purchase_item (
+  id BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键',
+  purchase_id BIGINT NOT NULL COMMENT '采购ID',
+  product_id BIGINT NOT NULL COMMENT '商品ID',
+  quantity INT NOT NULL COMMENT '数量',
+  unit_price DECIMAL(14,2) NOT NULL DEFAULT 0.00 COMMENT '单价',
+  total_amount DECIMAL(14,2) NOT NULL DEFAULT 0.00 COMMENT '明细金额',
+  remark VARCHAR(500) DEFAULT NULL COMMENT '备注',
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  deleted TINYINT NOT NULL DEFAULT 0 COMMENT '逻辑删除：0否，1是',
+  PRIMARY KEY (id),
+  KEY idx_biz_purchase_item_purchase_id (purchase_id),
+  KEY idx_biz_purchase_item_product_id (product_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='采购明细';
+
+CREATE TABLE IF NOT EXISTS biz_inventory_batch (
+  id BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键',
+  batch_no VARCHAR(50) NOT NULL COMMENT '批次号',
+  product_id BIGINT NOT NULL COMMENT '商品ID',
+  purchase_id BIGINT NOT NULL COMMENT '采购ID',
+  purchase_item_id BIGINT NOT NULL COMMENT '采购明细ID',
+  purchase_date DATE NOT NULL COMMENT '采购日期',
+  unit_cost DECIMAL(14,2) NOT NULL DEFAULT 0.00 COMMENT '单位成本',
+  initial_quantity INT NOT NULL COMMENT '初始数量',
+  available_quantity INT NOT NULL DEFAULT 0 COMMENT '可用数量',
+  sold_quantity INT NOT NULL DEFAULT 0 COMMENT '已售数量',
+  locked_quantity INT NOT NULL DEFAULT 0 COMMENT '锁定数量',
+  status TINYINT NOT NULL DEFAULT 1 COMMENT '状态：1可用，0停用',
+  remark VARCHAR(500) DEFAULT NULL COMMENT '备注',
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  deleted TINYINT NOT NULL DEFAULT 0 COMMENT '逻辑删除：0否，1是',
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_biz_inventory_batch_no (batch_no),
+  KEY idx_biz_inventory_batch_product_id (product_id),
+  KEY idx_biz_inventory_batch_purchase_item_id (purchase_item_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='库存批次';
+
+CREATE TABLE IF NOT EXISTS biz_inventory_log (
+  id BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键',
+  product_id BIGINT NOT NULL COMMENT '商品ID',
+  batch_id BIGINT NOT NULL COMMENT '批次ID',
+  business_type VARCHAR(30) NOT NULL COMMENT '业务类型',
+  business_id BIGINT DEFAULT NULL COMMENT '业务ID',
+  business_no VARCHAR(50) DEFAULT NULL COMMENT '业务单号',
+  change_quantity INT NOT NULL COMMENT '变更数量',
+  before_quantity INT NOT NULL COMMENT '变更前数量',
+  after_quantity INT NOT NULL COMMENT '变更后数量',
+  unit_cost DECIMAL(14,2) NOT NULL DEFAULT 0.00 COMMENT '单位成本',
+  business_date DATE NOT NULL COMMENT '业务日期',
+  remark VARCHAR(500) DEFAULT NULL COMMENT '备注',
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  PRIMARY KEY (id),
+  KEY idx_biz_inventory_log_product_id (product_id),
+  KEY idx_biz_inventory_log_batch_id (batch_id),
+  KEY idx_biz_inventory_log_business (business_type, business_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='库存流水';
+
+CREATE TABLE IF NOT EXISTS biz_sale_record (
+  id BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键',
+  record_no VARCHAR(50) NOT NULL COMMENT '销售记录号',
+  business_date DATE NOT NULL COMMENT '业务日期',
+  platform VARCHAR(30) NOT NULL COMMENT '销售平台',
+  platform_order_no VARCHAR(80) DEFAULT NULL COMMENT '平台订单号',
+  buyer_name VARCHAR(80) DEFAULT NULL COMMENT '买家姓名',
+  buyer_phone VARCHAR(30) DEFAULT NULL COMMENT '买家电话',
+  total_sale_amount DECIMAL(14,2) NOT NULL DEFAULT 0.00 COMMENT '销售总额',
+  total_cost_amount DECIMAL(14,2) NOT NULL DEFAULT 0.00 COMMENT '商品总成本',
+  platform_fee DECIMAL(14,2) NOT NULL DEFAULT 0.00 COMMENT '平台手续费',
+  express_fee DECIMAL(14,2) NOT NULL DEFAULT 0.00 COMMENT '快递费',
+  package_fee DECIMAL(14,2) NOT NULL DEFAULT 0.00 COMMENT '包装费',
+  promotion_fee DECIMAL(14,2) NOT NULL DEFAULT 0.00 COMMENT '推广费',
+  refund_amount DECIMAL(14,2) NOT NULL DEFAULT 0.00 COMMENT '退款金额',
+  other_expense DECIMAL(14,2) NOT NULL DEFAULT 0.00 COMMENT '其他费用',
+  received_amount DECIMAL(14,2) NOT NULL DEFAULT 0.00 COMMENT '实际到账金额',
+  profit_amount DECIMAL(14,2) NOT NULL DEFAULT 0.00 COMMENT '利润',
+  payment_status TINYINT NOT NULL DEFAULT 0 COMMENT '付款状态',
+  shipment_status TINYINT NOT NULL DEFAULT 0 COMMENT '发货状态',
+  express_company VARCHAR(80) DEFAULT NULL COMMENT '快递公司',
+  express_no VARCHAR(80) DEFAULT NULL COMMENT '快递单号',
+  remark VARCHAR(500) DEFAULT NULL COMMENT '备注',
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  deleted TINYINT NOT NULL DEFAULT 0 COMMENT '逻辑删除：0否，1是',
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_biz_sale_record_no (record_no),
+  KEY idx_biz_sale_record_platform_order_no (platform_order_no),
+  KEY idx_biz_sale_record_business_date (business_date)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='销售记录';
+
+CREATE TABLE IF NOT EXISTS biz_sale_item (
+  id BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键',
+  sale_record_id BIGINT NOT NULL COMMENT '销售记录ID',
+  product_id BIGINT NOT NULL COMMENT '商品ID',
+  batch_id BIGINT NOT NULL COMMENT '库存批次ID',
+  quantity INT NOT NULL COMMENT '销售数量',
+  sale_unit_price DECIMAL(14,2) NOT NULL DEFAULT 0.00 COMMENT '销售单价',
+  sale_amount DECIMAL(14,2) NOT NULL DEFAULT 0.00 COMMENT '销售金额',
+  cost_unit_price DECIMAL(14,2) NOT NULL DEFAULT 0.00 COMMENT '成本单价',
+  cost_amount DECIMAL(14,2) NOT NULL DEFAULT 0.00 COMMENT '成本金额',
+  profit_amount DECIMAL(14,2) NOT NULL DEFAULT 0.00 COMMENT '明细利润',
+  remark VARCHAR(500) DEFAULT NULL COMMENT '备注',
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  deleted TINYINT NOT NULL DEFAULT 0 COMMENT '逻辑删除：0否，1是',
+  PRIMARY KEY (id),
+  KEY idx_biz_sale_item_sale_record_id (sale_record_id),
+  KEY idx_biz_sale_item_product_id (product_id),
+  KEY idx_biz_sale_item_batch_id (batch_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='销售明细';
+
+CREATE TABLE IF NOT EXISTS biz_expense (
+  id BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键',
+  expense_no VARCHAR(50) NOT NULL COMMENT '支出单号',
+  expense_date DATE NOT NULL COMMENT '支出日期',
+  expense_type VARCHAR(30) NOT NULL COMMENT '支出类型',
+  expense_name VARCHAR(100) NOT NULL COMMENT '支出名称',
+  amount DECIMAL(14,2) NOT NULL DEFAULT 0.00 COMMENT '金额',
+  express_company VARCHAR(80) DEFAULT NULL COMMENT '快递公司',
+  shipment_count INT DEFAULT NULL COMMENT '发货数量',
+  related_sale_id BIGINT DEFAULT NULL COMMENT '关联销售ID',
+  related_order_no VARCHAR(80) DEFAULT NULL COMMENT '关联订单号',
+  independent_flag TINYINT NOT NULL DEFAULT 1 COMMENT '是否独立经营费用：1是，0否',
+  payment_method VARCHAR(50) DEFAULT NULL COMMENT '付款方式',
+  voucher_no VARCHAR(80) DEFAULT NULL COMMENT '凭证号',
+  remark VARCHAR(500) DEFAULT NULL COMMENT '备注',
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  deleted TINYINT NOT NULL DEFAULT 0 COMMENT '逻辑删除：0否，1是',
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_biz_expense_no (expense_no),
+  KEY idx_biz_expense_date (expense_date),
+  KEY idx_biz_expense_type (expense_type)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='经营支出';
