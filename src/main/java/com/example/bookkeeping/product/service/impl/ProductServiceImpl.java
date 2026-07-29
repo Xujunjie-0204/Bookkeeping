@@ -1,16 +1,16 @@
-package com.example.bookkeeping.product.product.service.impl;
+package com.example.bookkeeping.product.service.impl;
 
 import com.example.bookkeeping.common.exception.BusinessException;
 import com.example.bookkeeping.common.exception.ErrorCode;
 import com.example.bookkeeping.common.page.PageResult;
-import com.example.bookkeeping.product.product.dto.ProductQueryRequest;
-import com.example.bookkeeping.product.product.dto.SaveProductRequest;
-import com.example.bookkeeping.product.product.entity.BizProduct;
-import com.example.bookkeeping.product.product.mapper.BizProductMapper;
-import com.example.bookkeeping.product.product.service.ProductService;
-import com.example.bookkeeping.product.product.vo.ProductVO;
-import com.example.bookkeeping.product.type.entity.BizProductType;
-import com.example.bookkeeping.product.type.mapper.BizProductTypeMapper;
+import com.example.bookkeeping.product.dto.ProductQueryRequest;
+import com.example.bookkeeping.product.dto.SaveProductRequest;
+import com.example.bookkeeping.product.entity.BizProduct;
+import com.example.bookkeeping.product.entity.BizProductType;
+import com.example.bookkeeping.product.mapper.BizProductMapper;
+import com.example.bookkeeping.product.mapper.BizProductTypeMapper;
+import com.example.bookkeeping.product.service.ProductService;
+import com.example.bookkeeping.product.vo.ProductVO;
 import com.github.pagehelper.PageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

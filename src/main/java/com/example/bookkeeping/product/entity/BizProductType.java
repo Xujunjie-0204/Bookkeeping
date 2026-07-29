@@ -1,4 +1,4 @@
-package com.example.bookkeeping.product.type.entity;
+package com.example.bookkeeping.product.entity;
 
 import lombok.Data;
 

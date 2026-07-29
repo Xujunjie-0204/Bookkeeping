@@ -1,9 +1,9 @@
 package com.example.bookkeeping.controller;
 
 import com.example.bookkeeping.common.api.ApiResult;
-import com.example.bookkeeping.product.type.dto.SaveProductTypeRequest;
-import com.example.bookkeeping.product.type.service.ProductTypeService;
-import com.example.bookkeeping.product.type.vo.ProductTypeVO;
+import com.example.bookkeeping.product.dto.SaveProductTypeRequest;
+import com.example.bookkeeping.product.service.ProductTypeService;
+import com.example.bookkeeping.product.vo.ProductTypeVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.validation.annotation.Validated;

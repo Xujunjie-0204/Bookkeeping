@@ -1,6 +1,6 @@
-package com.example.bookkeeping.product.type.mapper;
+package com.example.bookkeeping.product.mapper;
 
-import com.example.bookkeeping.product.type.entity.BizProductType;
+import com.example.bookkeeping.product.entity.BizProductType;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

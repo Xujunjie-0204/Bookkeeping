@@ -1,7 +1,7 @@
-package com.example.bookkeeping.product.product.mapper;
+package com.example.bookkeeping.product.mapper;
 
-import com.example.bookkeeping.product.product.entity.BizProduct;
-import com.example.bookkeeping.product.product.vo.ProductVO;
+import com.example.bookkeeping.product.entity.BizProduct;
+import com.example.bookkeeping.product.vo.ProductVO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

@@ -2,10 +2,10 @@ package com.example.bookkeeping.controller;
 
 import com.example.bookkeeping.common.api.ApiResult;
 import com.example.bookkeeping.common.page.PageResult;
-import com.example.bookkeeping.product.product.dto.ProductQueryRequest;
-import com.example.bookkeeping.product.product.dto.SaveProductRequest;
-import com.example.bookkeeping.product.product.service.ProductService;
-import com.example.bookkeeping.product.product.vo.ProductVO;
+import com.example.bookkeeping.product.dto.ProductQueryRequest;
+import com.example.bookkeeping.product.dto.SaveProductRequest;
+import com.example.bookkeeping.product.service.ProductService;
+import com.example.bookkeeping.product.vo.ProductVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.validation.annotation.Validated;

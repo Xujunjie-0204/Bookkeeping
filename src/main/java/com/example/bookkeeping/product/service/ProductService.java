@@ -1,9 +1,9 @@
-package com.example.bookkeeping.product.product.service;
+package com.example.bookkeeping.product.service;
 
 import com.example.bookkeeping.common.page.PageResult;
-import com.example.bookkeeping.product.product.dto.ProductQueryRequest;
-import com.example.bookkeeping.product.product.dto.SaveProductRequest;
-import com.example.bookkeeping.product.product.vo.ProductVO;
+import com.example.bookkeeping.product.dto.ProductQueryRequest;
+import com.example.bookkeeping.product.dto.SaveProductRequest;
+import com.example.bookkeeping.product.vo.ProductVO;
 
 public interface ProductService {
 

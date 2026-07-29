@@ -1,4 +1,4 @@
-package com.example.bookkeeping.product.product.dto;
+package com.example.bookkeeping.product.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;

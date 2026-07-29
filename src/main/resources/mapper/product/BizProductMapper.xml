@@ -2,9 +2,9 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.example.bookkeeping.product.product.mapper.BizProductMapper">
+<mapper namespace="com.example.bookkeeping.product.mapper.BizProductMapper">
 
-    <resultMap id="BizProductResultMap" type="com.example.bookkeeping.product.product.entity.BizProduct">
+    <resultMap id="BizProductResultMap" type="com.example.bookkeeping.product.entity.BizProduct">
         <id column="id" property="id"/>
         <result column="product_code" property="productCode"/>
         <result column="product_name" property="productName"/>
@@ -23,7 +23,7 @@
         <result column="deleted" property="deleted"/>
     </resultMap>
 
-    <resultMap id="ProductVOResultMap" type="com.example.bookkeeping.product.product.vo.ProductVO">
+    <resultMap id="ProductVOResultMap" type="com.example.bookkeeping.product.vo.ProductVO">
         <id column="id" property="id"/>
         <result column="product_code" property="productCode"/>
         <result column="product_name" property="productName"/>
@@ -104,7 +104,7 @@
         ORDER BY p.id DESC
     </select>
 
-    <insert id="insert" parameterType="com.example.bookkeeping.product.product.entity.BizProduct"
+    <insert id="insert" parameterType="com.example.bookkeeping.product.entity.BizProduct"
             useGeneratedKeys="true" keyProperty="id">
         INSERT INTO biz_product (
             product_code, product_name, product_type_id, category_name, brand, model, specification,
@@ -115,7 +115,7 @@
         )
     </insert>
 
-    <update id="update" parameterType="com.example.bookkeeping.product.product.entity.BizProduct">
+    <update id="update" parameterType="com.example.bookkeeping.product.entity.BizProduct">
         UPDATE biz_product
         SET product_code = #{productCode},
             product_name = #{productName},

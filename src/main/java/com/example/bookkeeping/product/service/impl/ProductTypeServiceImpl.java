@@ -1,12 +1,12 @@
-package com.example.bookkeeping.product.type.service.impl;
+package com.example.bookkeeping.product.service.impl;
 
 import com.example.bookkeeping.common.exception.BusinessException;
 import com.example.bookkeeping.common.exception.ErrorCode;
-import com.example.bookkeeping.product.type.dto.SaveProductTypeRequest;
-import com.example.bookkeeping.product.type.entity.BizProductType;
-import com.example.bookkeeping.product.type.mapper.BizProductTypeMapper;
-import com.example.bookkeeping.product.type.service.ProductTypeService;
-import com.example.bookkeeping.product.type.vo.ProductTypeVO;
+import com.example.bookkeeping.product.dto.SaveProductTypeRequest;
+import com.example.bookkeeping.product.entity.BizProductType;
+import com.example.bookkeeping.product.mapper.BizProductTypeMapper;
+import com.example.bookkeeping.product.service.ProductTypeService;
+import com.example.bookkeeping.product.vo.ProductTypeVO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;

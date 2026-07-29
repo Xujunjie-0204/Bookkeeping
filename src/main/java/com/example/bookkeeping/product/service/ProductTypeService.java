@@ -1,7 +1,7 @@
-package com.example.bookkeeping.product.type.service;
+package com.example.bookkeeping.product.service;
 
-import com.example.bookkeeping.product.type.dto.SaveProductTypeRequest;
-import com.example.bookkeeping.product.type.vo.ProductTypeVO;
+import com.example.bookkeeping.product.dto.SaveProductTypeRequest;
+import com.example.bookkeeping.product.vo.ProductTypeVO;
 
 import java.util.List;
 
