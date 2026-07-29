@@ -1,0 +1,26 @@
+package com.example.bookkeeping.product.mapper;
+
+import com.example.bookkeeping.product.entity.BizProduct;
+import com.example.bookkeeping.product.vo.ProductVO;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+
+public interface BizProductMapper {
+
+    BizProduct selectById(@Param("id") Long id);
+
+    BizProduct selectByProductCode(@Param("productCode") String productCode);
+
+    ProductVO selectVOById(@Param("id") Long id);
+
+    List<ProductVO> selectPage(@Param("keyword") String keyword,
+                               @Param("productTypeId") Long productTypeId,
+                               @Param("status") Integer status);
+
+    int insert(BizProduct product);
+
+    int update(BizProduct product);
+
+    int deleteById(@Param("id") Long id);
+}

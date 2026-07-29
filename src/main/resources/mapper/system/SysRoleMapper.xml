@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.bookkeeping.system.role.mapper.SysRoleMapper">
+
+    <resultMap id="SysRoleResultMap" type="com.example.bookkeeping.system.role.entity.SysRole">
+        <id column="id" property="id"/>
+        <result column="role_code" property="roleCode"/>
+        <result column="role_name" property="roleName"/>
+        <result column="status" property="status"/>
+        <result column="remark" property="remark"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+        <result column="deleted" property="deleted"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, role_code, role_name, status, remark, created_at, updated_at, deleted
+    </sql>
+
+    <select id="selectById" resultMap="SysRoleResultMap">
+        SELECT
+        <include refid="BaseColumns"/>
+        FROM sys_role
+        WHERE id = #{id}
+          AND deleted = 0
+        LIMIT 1
+    </select>
+
+    <select id="selectByRoleCode" resultMap="SysRoleResultMap">
+        SELECT
+        <include refid="BaseColumns"/>
+        FROM sys_role
+        WHERE role_code = #{roleCode}
+          AND deleted = 0
+        LIMIT 1
+    </select>
+
+    <select id="selectAll" resultMap="SysRoleResultMap">
+        SELECT
+        <include refid="BaseColumns"/>
+        FROM sys_role
+        WHERE deleted = 0
+        ORDER BY id ASC
+    </select>
+
+    <select id="selectByUserId" resultMap="SysRoleResultMap">
+        SELECT
+        r.id, r.role_code, r.role_name, r.status, r.remark, r.created_at, r.updated_at, r.deleted
+        FROM sys_role r
+        INNER JOIN sys_user_role ur ON ur.role_id = r.id
+        WHERE ur.user_id = #{userId}
+          AND r.deleted = 0
+          AND r.status = 1
+        ORDER BY r.id ASC
+    </select>
+
+    <select id="selectMenuIdsByRoleId" resultType="long">
+        SELECT menu_id
+        FROM sys_role_menu
+        WHERE role_id = #{roleId}
+        ORDER BY menu_id ASC
+    </select>
+
+    <insert id="insert" parameterType="com.example.bookkeeping.system.role.entity.SysRole"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sys_role (
+            role_code, role_name, status, remark, created_at, updated_at, deleted
+        ) VALUES (
+            #{roleCode}, #{roleName}, #{status}, #{remark}, NOW(), NOW(), 0
+        )
+    </insert>
+
+    <update id="update" parameterType="com.example.bookkeeping.system.role.entity.SysRole">
+        UPDATE sys_role
+        SET role_code = #{roleCode},
+            role_name = #{roleName},
+            status = #{status},
+            remark = #{remark},
+            updated_at = NOW()
+        WHERE id = #{id}
+          AND deleted = 0
+    </update>
+
+    <update id="deleteById">
+        UPDATE sys_role
+        SET deleted = 1,
+            updated_at = NOW()
+        WHERE id = #{id}
+          AND deleted = 0
+    </update>
+
+    <delete id="deleteRoleMenus">
+        DELETE FROM sys_role_menu
+        WHERE role_id = #{roleId}
+    </delete>
+
+    <insert id="insertRoleMenu">
+        INSERT IGNORE INTO sys_role_menu (
+            role_id, menu_id, created_at
+        ) VALUES (
+            #{roleId}, #{menuId}, NOW()
+        )
+    </insert>
+</mapper>

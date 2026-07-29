@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.bookkeeping.inventory.mapper.BizInventoryLogMapper">
+    <insert id="insert" parameterType="com.example.bookkeeping.inventory.entity.BizInventoryLog">
+        INSERT INTO biz_inventory_log (
+            product_id, batch_id, business_type, business_id, business_no, change_quantity,
+            before_quantity, after_quantity, unit_cost, business_date, remark, created_at
+        ) VALUES (
+            #{productId}, #{batchId}, #{businessType}, #{businessId}, #{businessNo}, #{changeQuantity},
+            #{beforeQuantity}, #{afterQuantity}, #{unitCost}, #{businessDate}, #{remark}, NOW()
+        )
+    </insert>
+
+    <delete id="deletePurchaseInLogs">
+        DELETE FROM biz_inventory_log
+        WHERE business_type = 'PURCHASE_IN'
+          AND business_id = #{purchaseId}
+    </delete>
+</mapper>

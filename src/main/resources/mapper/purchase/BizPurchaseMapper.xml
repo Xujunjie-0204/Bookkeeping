@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.bookkeeping.purchase.mapper.BizPurchaseMapper">
+    <resultMap id="BizPurchaseResultMap" type="com.example.bookkeeping.purchase.entity.BizPurchase">
+        <id column="id" property="id"/>
+        <result column="purchase_no" property="purchaseNo"/>
+        <result column="platform" property="platform"/>
+        <result column="platform_order_no" property="platformOrderNo"/>
+        <result column="supplier_name" property="supplierName"/>
+        <result column="seller_account" property="sellerAccount"/>
+        <result column="purchase_date" property="purchaseDate"/>
+        <result column="item_count" property="itemCount"/>
+        <result column="purchase_status" property="purchaseStatus"/>
+        <result column="goods_amount" property="goodsAmount"/>
+        <result column="freight_amount" property="freightAmount"/>
+        <result column="discount_amount" property="discountAmount"/>
+        <result column="other_amount" property="otherAmount"/>
+        <result column="pay_amount" property="payAmount"/>
+        <result column="payment_method" property="paymentMethod"/>
+        <result column="received_at" property="receivedAt"/>
+        <result column="remark" property="remark"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+        <result column="deleted" property="deleted"/>
+    </resultMap>
+
+    <select id="selectById" resultMap="BizPurchaseResultMap">
+        SELECT * FROM biz_purchase WHERE id = #{id} AND deleted = 0 LIMIT 1
+    </select>
+
+    <select id="selectByPurchaseNo" resultMap="BizPurchaseResultMap">
+        SELECT * FROM biz_purchase WHERE purchase_no = #{purchaseNo} AND deleted = 0 LIMIT 1
+    </select>
+
+    <select id="selectPage" resultType="com.example.bookkeeping.purchase.vo.PurchaseVO">
+        SELECT id, purchase_no, platform, platform_order_no, supplier_name, seller_account,
+               purchase_date, item_count, purchase_status, goods_amount, freight_amount,
+               discount_amount, other_amount, pay_amount, payment_method, received_at, remark, created_at
+        FROM biz_purchase
+        WHERE deleted = 0
+        <if test="keyword != null and keyword != ''">
+          AND (purchase_no LIKE CONCAT('%', #{keyword}, '%')
+            OR platform_order_no LIKE CONCAT('%', #{keyword}, '%')
+            OR seller_account LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="purchaseStatus != null">
+          AND purchase_status = #{purchaseStatus}
+        </if>
+        ORDER BY purchase_date DESC, id DESC
+    </select>
+
+    <insert id="insert" parameterType="com.example.bookkeeping.purchase.entity.BizPurchase" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO biz_purchase (
+            purchase_no, platform, platform_order_no, supplier_name, seller_account, purchase_date,
+            item_count, purchase_status, goods_amount, freight_amount, discount_amount, other_amount,
+            pay_amount, invoice_status, payment_method, received_at, remark, created_at, updated_at, deleted
+        ) VALUES (
+            #{purchaseNo}, #{platform}, #{platformOrderNo}, #{supplierName}, #{sellerAccount}, #{purchaseDate},
+            #{itemCount}, #{purchaseStatus}, #{goodsAmount}, #{freightAmount}, #{discountAmount}, #{otherAmount},
+            #{payAmount}, #{invoiceStatus}, #{paymentMethod}, #{receivedAt}, #{remark}, NOW(), NOW(), 0
+        )
+    </insert>
+
+    <update id="deleteById">
+        UPDATE biz_purchase SET deleted = 1, updated_at = NOW() WHERE id = #{id} AND deleted = 0
+    </update>
+</mapper>
