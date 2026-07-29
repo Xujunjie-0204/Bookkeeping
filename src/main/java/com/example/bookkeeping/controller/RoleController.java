@@ -1,4 +1,4 @@
-package com.example.bookkeeping.system.role.controller;
+package com.example.bookkeeping.controller;
 
 import com.example.bookkeeping.common.api.ApiResult;
 import com.example.bookkeeping.system.role.dto.AssignRoleMenusRequest;

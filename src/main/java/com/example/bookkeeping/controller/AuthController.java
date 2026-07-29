@@ -1,4 +1,4 @@
-package com.example.bookkeeping.system.user.controller;
+package com.example.bookkeeping.controller;
 
 import com.example.bookkeeping.common.api.ApiResult;
 import com.example.bookkeeping.security.UserPrincipal;

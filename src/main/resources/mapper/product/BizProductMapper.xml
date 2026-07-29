@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.bookkeeping.product.product.mapper.BizProductMapper">
+
+    <resultMap id="BizProductResultMap" type="com.example.bookkeeping.product.product.entity.BizProduct">
+        <id column="id" property="id"/>
+        <result column="product_code" property="productCode"/>
+        <result column="product_name" property="productName"/>
+        <result column="product_type_id" property="productTypeId"/>
+        <result column="category_name" property="categoryName"/>
+        <result column="brand" property="brand"/>
+        <result column="model" property="model"/>
+        <result column="specification" property="specification"/>
+        <result column="default_cost" property="defaultCost"/>
+        <result column="default_sale_price" property="defaultSalePrice"/>
+        <result column="warning_stock" property="warningStock"/>
+        <result column="status" property="status"/>
+        <result column="remark" property="remark"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+        <result column="deleted" property="deleted"/>
+    </resultMap>
+
+    <resultMap id="ProductVOResultMap" type="com.example.bookkeeping.product.product.vo.ProductVO">
+        <id column="id" property="id"/>
+        <result column="product_code" property="productCode"/>
+        <result column="product_name" property="productName"/>
+        <result column="product_type_id" property="productTypeId"/>
+        <result column="product_type_name" property="productTypeName"/>
+        <result column="category_name" property="categoryName"/>
+        <result column="brand" property="brand"/>
+        <result column="model" property="model"/>
+        <result column="specification" property="specification"/>
+        <result column="default_cost" property="defaultCost"/>
+        <result column="default_sale_price" property="defaultSalePrice"/>
+        <result column="warning_stock" property="warningStock"/>
+        <result column="status" property="status"/>
+        <result column="remark" property="remark"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, product_code, product_name, product_type_id, category_name, brand, model, specification,
+        default_cost, default_sale_price, warning_stock, status, remark, created_at, updated_at, deleted
+    </sql>
+
+    <sql id="VOColumns">
+        p.id, p.product_code, p.product_name, p.product_type_id,
+        COALESCE(pt.type_name, p.category_name) AS product_type_name,
+        p.category_name, p.brand, p.model, p.specification,
+        p.default_cost, p.default_sale_price, p.warning_stock, p.status,
+        p.remark, p.created_at, p.updated_at
+    </sql>
+
+    <select id="selectById" resultMap="BizProductResultMap">
+        SELECT
+        <include refid="BaseColumns"/>
+        FROM biz_product
+        WHERE id = #{id}
+          AND deleted = 0
+        LIMIT 1
+    </select>
+
+    <select id="selectByProductCode" resultMap="BizProductResultMap">
+        SELECT
+        <include refid="BaseColumns"/>
+        FROM biz_product
+        WHERE product_code = #{productCode}
+          AND deleted = 0
+        LIMIT 1
+    </select>
+
+    <select id="selectVOById" resultMap="ProductVOResultMap">
+        SELECT
+        <include refid="VOColumns"/>
+        FROM biz_product p
+        LEFT JOIN biz_product_type pt ON pt.id = p.product_type_id AND pt.deleted = 0
+        WHERE p.id = #{id}
+          AND p.deleted = 0
+        LIMIT 1
+    </select>
+
+    <select id="selectPage" resultMap="ProductVOResultMap">
+        SELECT
+        <include refid="VOColumns"/>
+        FROM biz_product p
+        LEFT JOIN biz_product_type pt ON pt.id = p.product_type_id AND pt.deleted = 0
+        WHERE p.deleted = 0
+        <if test="keyword != null and keyword != ''">
+          AND (
+            p.product_code LIKE CONCAT('%', #{keyword}, '%')
+            OR p.product_name LIKE CONCAT('%', #{keyword}, '%')
+          )
+        </if>
+        <if test="productTypeId != null">
+          AND p.product_type_id = #{productTypeId}
+        </if>
+        <if test="status != null">
+          AND p.status = #{status}
+        </if>
+        ORDER BY p.id DESC
+    </select>
+
+    <insert id="insert" parameterType="com.example.bookkeeping.product.product.entity.BizProduct"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO biz_product (
+            product_code, product_name, product_type_id, category_name, brand, model, specification,
+            default_cost, default_sale_price, warning_stock, status, remark, created_at, updated_at, deleted
+        ) VALUES (
+            #{productCode}, #{productName}, #{productTypeId}, #{categoryName}, #{brand}, #{model}, #{specification},
+            #{defaultCost}, #{defaultSalePrice}, #{warningStock}, #{status}, #{remark}, NOW(), NOW(), 0
+        )
+    </insert>
+
+    <update id="update" parameterType="com.example.bookkeeping.product.product.entity.BizProduct">
+        UPDATE biz_product
+        SET product_code = #{productCode},
+            product_name = #{productName},
+            product_type_id = #{productTypeId},
+            category_name = #{categoryName},
+            brand = #{brand},
+            model = #{model},
+            specification = #{specification},
+            default_cost = #{defaultCost},
+            default_sale_price = #{defaultSalePrice},
+            warning_stock = #{warningStock},
+            status = #{status},
+            remark = #{remark},
+            updated_at = NOW()
+        WHERE id = #{id}
+          AND deleted = 0
+    </update>
+
+    <update id="deleteById">
+        UPDATE biz_product
+        SET deleted = 1,
+            updated_at = NOW()
+        WHERE id = #{id}
+          AND deleted = 0
+    </update>
+</mapper>

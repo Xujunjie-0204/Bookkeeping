@@ -12,6 +12,8 @@ public interface BizProductMapper {
 
     BizProduct selectByProductCode(@Param("productCode") String productCode);
 
+    ProductVO selectVOById(@Param("id") Long id);
+
     List<ProductVO> selectPage(@Param("keyword") String keyword,
                                @Param("productTypeId") Long productTypeId,
                                @Param("status") Integer status);
