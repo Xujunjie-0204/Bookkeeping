@@ -4,6 +4,7 @@ import com.example.bookkeeping.common.api.ApiResult;
 import com.example.bookkeeping.security.UserPrincipal;
 import com.example.bookkeeping.system.user.dto.ChangePasswordRequest;
 import com.example.bookkeeping.system.user.dto.LoginRequest;
+import com.example.bookkeeping.system.user.dto.UpdateProfileRequest;
 import com.example.bookkeeping.system.user.service.UserService;
 import com.example.bookkeeping.system.user.vo.LoginResponse;
 import com.example.bookkeeping.system.user.vo.UserProfileVO;
@@ -42,6 +43,13 @@ public class AuthController {
     @Operation(summary = "获取当前登录用户")
     public ApiResult<UserProfileVO> profile(@AuthenticationPrincipal UserPrincipal principal) {
         return ApiResult.success(userService.getProfile(principal.getId()));
+    }
+
+    @PutMapping("/profile")
+    @Operation(summary = "修改当前登录用户信息")
+    public ApiResult<UserProfileVO> updateProfile(@AuthenticationPrincipal UserPrincipal principal,
+                                                  @Valid @RequestBody UpdateProfileRequest request) {
+        return ApiResult.success(userService.updateProfile(principal.getId(), request));
     }
 
     @PostMapping("/logout")

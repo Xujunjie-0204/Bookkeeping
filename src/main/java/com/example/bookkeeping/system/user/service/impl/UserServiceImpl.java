@@ -7,6 +7,7 @@ import com.example.bookkeeping.security.JwtTokenProvider;
 import com.example.bookkeeping.security.UserPrincipal;
 import com.example.bookkeeping.system.user.dto.ChangePasswordRequest;
 import com.example.bookkeeping.system.user.dto.LoginRequest;
+import com.example.bookkeeping.system.user.dto.UpdateProfileRequest;
 import com.example.bookkeeping.system.user.entity.SysUser;
 import com.example.bookkeeping.system.user.mapper.SysUserMapper;
 import com.example.bookkeeping.system.user.service.UserService;
@@ -73,6 +74,20 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException(ErrorCode.NOT_FOUND, "用户不存在");
         }
         return toProfile(user);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public UserProfileVO updateProfile(Long userId, UpdateProfileRequest request) {
+        SysUser user = sysUserMapper.selectById(userId);
+        if (user == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND, "用户不存在");
+        }
+        String phone = request.getPhone() == null || request.getPhone().trim().isEmpty()
+                ? null
+                : request.getPhone().trim();
+        sysUserMapper.updateProfile(userId, request.getNickname().trim(), phone);
+        return getProfile(userId);
     }
 
     @Override

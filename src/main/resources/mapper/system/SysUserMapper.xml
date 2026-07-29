@@ -47,6 +47,15 @@
           AND deleted = 0
     </update>
 
+    <update id="updateProfile">
+        UPDATE sys_user
+        SET nickname = #{nickname},
+            phone = #{phone},
+            updated_at = NOW()
+        WHERE id = #{id}
+          AND deleted = 0
+    </update>
+
     <update id="updatePassword">
         UPDATE sys_user
         SET password = #{password},

@@ -13,5 +13,9 @@ public interface SysUserMapper {
 
     int updateLastLoginAt(@Param("id") Long id, @Param("lastLoginAt") LocalDateTime lastLoginAt);
 
+    int updateProfile(@Param("id") Long id,
+                      @Param("nickname") String nickname,
+                      @Param("phone") String phone);
+
     int updatePassword(@Param("id") Long id, @Param("password") String password);
 }
