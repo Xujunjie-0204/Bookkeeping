@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.bookkeeping.sale.mapper.BizSaleItemMapper">
+    <resultMap id="SaleItemVOResultMap" type="com.example.bookkeeping.sale.vo.SaleItemVO">
+        <id column="id" property="id"/>
+        <result column="product_id" property="productId"/>
+        <result column="product_code" property="productCode"/>
+        <result column="product_name" property="productName"/>
+        <result column="product_type_name" property="productTypeName"/>
+        <result column="brand" property="brand"/>
+        <result column="model" property="model"/>
+        <result column="device_no" property="deviceNo"/>
+        <result column="condition_desc" property="conditionDesc"/>
+        <result column="batch_id" property="batchId"/>
+        <result column="batch_no" property="batchNo"/>
+        <result column="purchase_id" property="purchaseId"/>
+        <result column="purchase_item_id" property="purchaseItemId"/>
+        <result column="purchase_no" property="purchaseNo"/>
+        <result column="quantity" property="quantity"/>
+        <result column="sale_unit_price" property="saleUnitPrice"/>
+        <result column="sale_amount" property="saleAmount"/>
+        <result column="cost_unit_price" property="costUnitPrice"/>
+        <result column="cost_amount" property="costAmount"/>
+        <result column="profit_amount" property="profitAmount"/>
+        <result column="remark" property="remark"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.example.bookkeeping.sale.entity.BizSaleItem">
+        INSERT INTO biz_sale_item (
+            sale_record_id, product_id, batch_id, purchase_id, purchase_item_id, quantity,
+            sale_unit_price, sale_amount, cost_unit_price, cost_amount, profit_amount,
+            remark, created_at, updated_at, deleted
+        ) VALUES (
+            #{saleRecordId}, #{productId}, #{batchId}, #{purchaseId}, #{purchaseItemId}, #{quantity},
+            #{saleUnitPrice}, #{saleAmount}, #{costUnitPrice}, #{costAmount}, #{profitAmount},
+            #{remark}, NOW(), NOW(), 0
+        )
+    </insert>
+
+    <select id="selectVOBySaleRecordId" resultMap="SaleItemVOResultMap">
+        SELECT si.id, si.product_id, p.product_code, p.product_name, pt.type_name AS product_type_name,
+               p.brand, p.model, pi.device_no, pi.condition_desc,
+               si.batch_id, b.batch_no, si.purchase_id, si.purchase_item_id, pu.purchase_no,
+               si.quantity, si.sale_unit_price, si.sale_amount, si.cost_unit_price,
+               si.cost_amount, si.profit_amount, si.remark
+        FROM biz_sale_item si
+        INNER JOIN biz_product p ON p.id = si.product_id AND p.deleted = 0
+        LEFT JOIN biz_product_type pt ON pt.id = p.product_type_id AND pt.deleted = 0
+        INNER JOIN biz_inventory_batch b ON b.id = si.batch_id AND b.deleted = 0
+        INNER JOIN biz_purchase pu ON pu.id = si.purchase_id AND pu.deleted = 0
+        LEFT JOIN biz_purchase_item pi ON pi.id = si.purchase_item_id AND pi.deleted = 0
+        WHERE si.sale_record_id = #{saleRecordId}
+          AND si.deleted = 0
+        ORDER BY si.id ASC
+    </select>
+</mapper>

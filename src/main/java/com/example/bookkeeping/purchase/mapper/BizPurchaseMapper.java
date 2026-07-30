@@ -29,5 +29,7 @@ public interface BizPurchaseMapper {
 
     int updateEditableById(BizPurchase purchase);
 
+    int refreshSaleStatus(@Param("id") Long id);
+
     int deleteById(@Param("id") Long id);
 }

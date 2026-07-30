@@ -141,6 +141,24 @@
           AND deleted = 0
     </update>
 
+    <update id="refreshSaleStatus">
+        UPDATE biz_purchase p
+        SET p.purchase_status = (
+            SELECT CASE
+                WHEN COALESCE(SUM(b.sold_quantity), 0) = 0 THEN 2
+                WHEN COALESCE(SUM(b.available_quantity), 0) = 0 THEN 5
+                ELSE 4
+            END
+            FROM biz_inventory_batch b
+            WHERE b.purchase_id = p.id
+              AND b.deleted = 0
+        ),
+        p.updated_at = NOW()
+        WHERE p.id = #{id}
+          AND p.deleted = 0
+          AND p.purchase_status IN (2, 4, 5)
+    </update>
+
     <update id="deleteById">
         UPDATE biz_purchase SET deleted = 1, updated_at = NOW() WHERE id = #{id} AND deleted = 0
     </update>
