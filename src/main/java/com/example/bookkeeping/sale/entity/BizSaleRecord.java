@@ -23,6 +23,7 @@ public class BizSaleRecord {
     private BigDecimal promotionFee;
     private BigDecimal refundAmount;
     private BigDecimal otherExpense;
+    private String feeConfig;
     private BigDecimal receivedAmount;
     private BigDecimal profitAmount;
     private Integer paymentStatus;

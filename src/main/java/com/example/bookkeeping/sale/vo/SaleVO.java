@@ -20,6 +20,13 @@ public class SaleVO {
     private Integer itemCount;
     private BigDecimal totalSaleAmount;
     private BigDecimal totalCostAmount;
+    private BigDecimal platformFee;
+    private BigDecimal expressFee;
+    private BigDecimal packageFee;
+    private BigDecimal promotionFee;
+    private BigDecimal refundAmount;
+    private BigDecimal otherExpense;
+    private String feeConfig;
     private BigDecimal receivedAmount;
     private BigDecimal profitAmount;
     private Integer paymentStatus;

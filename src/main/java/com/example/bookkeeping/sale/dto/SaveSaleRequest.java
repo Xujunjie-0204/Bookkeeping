@@ -29,6 +29,8 @@ public class SaveSaleRequest {
     private BigDecimal promotionFee;
     private BigDecimal refundAmount;
     private BigDecimal otherExpense;
+    private Boolean worryFreeSale;
+    private BigDecimal platformFeeRate;
     private Integer paymentStatus;
     private Integer shipmentStatus;
     private String expressCompany;

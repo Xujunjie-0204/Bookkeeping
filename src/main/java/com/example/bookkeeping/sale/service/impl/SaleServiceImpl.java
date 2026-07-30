@@ -114,6 +114,7 @@ public class SaleServiceImpl implements SaleService {
         record.setPromotionFee(defaultZero(request.getPromotionFee()));
         record.setRefundAmount(defaultZero(request.getRefundAmount()));
         record.setOtherExpense(defaultZero(request.getOtherExpense()));
+        record.setFeeConfig(buildFeeConfig(request, record));
         record.setPaymentStatus(request.getPaymentStatus() == null ? 1 : request.getPaymentStatus());
         record.setShipmentStatus(request.getShipmentStatus() == null ? 0 : request.getShipmentStatus());
         record.setExpressCompany(trimToNull(request.getExpressCompany()));
@@ -231,7 +232,7 @@ public class SaleServiceImpl implements SaleService {
         if (record.getExpressFee().compareTo(BigDecimal.ZERO) <= 0) {
             return;
         }
-        BigDecimal amount = record.getExpressFee().add(record.getOtherExpense());
+        BigDecimal amount = record.getExpressFee().add(record.getPackageFee()).add(record.getOtherExpense());
         BizExpense expense = new BizExpense();
         expense.setExpenseNo(generateExpenseNo());
         expense.setExpenseDate(record.getBusinessDate());
@@ -243,13 +244,31 @@ public class SaleServiceImpl implements SaleService {
         expense.setRelatedSaleId(record.getId());
         expense.setRelatedOrderNo(record.getRecordNo());
         expense.setIndependentFlag(0);
-        expense.setRemark("销售单自动生成，快递费+" + record.getExpressFee() + "，包装费+" + record.getOtherExpense());
+        expense.setRemark("销售单自动生成，快递费+" + record.getExpressFee()
+                + "，包装费+" + record.getPackageFee()
+                + "，其它费用+" + record.getOtherExpense());
         expenseMapper.insert(expense);
     }
 
     private String generateSaleNo() {
         return "S" + LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE)
                 + UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase();
+    }
+
+    private String buildFeeConfig(SaveSaleRequest request, BizSaleRecord record) {
+        BigDecimal platformFeeRate = request.getPlatformFeeRate() == null
+                ? (Boolean.TRUE.equals(request.getWorryFreeSale()) ? new BigDecimal("0.026") : new BigDecimal("0.016"))
+                : request.getPlatformFeeRate();
+        return "{"
+                + "\"worryFreeSale\":" + Boolean.TRUE.equals(request.getWorryFreeSale()) + ","
+                + "\"platformFeeRate\":" + platformFeeRate + ","
+                + "\"platformFee\":" + record.getPlatformFee() + ","
+                + "\"expressFee\":" + record.getExpressFee() + ","
+                + "\"packageFee\":" + record.getPackageFee() + ","
+                + "\"promotionFee\":" + record.getPromotionFee() + ","
+                + "\"refundAmount\":" + record.getRefundAmount() + ","
+                + "\"otherExpense\":" + record.getOtherExpense()
+                + "}";
     }
 
     private String generateExpenseNo() {

@@ -17,6 +17,7 @@
         <result column="promotion_fee" property="promotionFee"/>
         <result column="refund_amount" property="refundAmount"/>
         <result column="other_expense" property="otherExpense"/>
+        <result column="fee_config" property="feeConfig"/>
         <result column="received_amount" property="receivedAmount"/>
         <result column="profit_amount" property="profitAmount"/>
         <result column="payment_status" property="paymentStatus"/>
@@ -40,6 +41,13 @@
         <result column="item_count" property="itemCount"/>
         <result column="total_sale_amount" property="totalSaleAmount"/>
         <result column="total_cost_amount" property="totalCostAmount"/>
+        <result column="platform_fee" property="platformFee"/>
+        <result column="express_fee" property="expressFee"/>
+        <result column="package_fee" property="packageFee"/>
+        <result column="promotion_fee" property="promotionFee"/>
+        <result column="refund_amount" property="refundAmount"/>
+        <result column="other_expense" property="otherExpense"/>
+        <result column="fee_config" property="feeConfig"/>
         <result column="received_amount" property="receivedAmount"/>
         <result column="profit_amount" property="profitAmount"/>
         <result column="payment_status" property="paymentStatus"/>
@@ -94,7 +102,9 @@
                GROUP_CONCAT(DISTINCT p.product_name ORDER BY p.product_name SEPARATOR '、') AS product_name,
                GROUP_CONCAT(DISTINCT pu.purchase_no ORDER BY pu.purchase_no SEPARATOR '、') AS purchase_no,
                sr.buyer_name, sr.buyer_phone, COALESCE(SUM(si.quantity), 0) AS item_count,
-               sr.total_sale_amount, sr.total_cost_amount, sr.received_amount, sr.profit_amount,
+               sr.total_sale_amount, sr.total_cost_amount, sr.platform_fee, sr.express_fee,
+               sr.package_fee, sr.promotion_fee, sr.refund_amount, sr.other_expense,
+               sr.fee_config, sr.received_amount, sr.profit_amount,
                sr.payment_status, sr.shipment_status, sr.express_company, sr.express_no,
                sr.remark, sr.created_at
         FROM biz_sale_record sr
@@ -104,6 +114,8 @@
         <include refid="SaleFilterSql"/>
         GROUP BY sr.id, sr.record_no, sr.business_date, sr.platform, sr.platform_order_no,
                  sr.buyer_name, sr.buyer_phone, sr.total_sale_amount, sr.total_cost_amount,
+                 sr.platform_fee, sr.express_fee, sr.package_fee, sr.promotion_fee,
+                 sr.refund_amount, sr.other_expense, sr.fee_config,
                  sr.received_amount, sr.profit_amount, sr.payment_status, sr.shipment_status,
                  sr.express_company, sr.express_no, sr.remark, sr.created_at
         ORDER BY sr.business_date DESC, sr.id DESC
@@ -128,13 +140,13 @@
         INSERT INTO biz_sale_record (
             record_no, business_date, platform, platform_order_no, buyer_name, buyer_phone,
             total_sale_amount, total_cost_amount, platform_fee, express_fee, package_fee,
-            promotion_fee, refund_amount, other_expense, received_amount, profit_amount,
+            promotion_fee, refund_amount, other_expense, fee_config, received_amount, profit_amount,
             payment_status, shipment_status, express_company, express_no, remark,
             created_at, updated_at, deleted
         ) VALUES (
             #{recordNo}, #{businessDate}, #{platform}, #{platformOrderNo}, #{buyerName}, #{buyerPhone},
             #{totalSaleAmount}, #{totalCostAmount}, #{platformFee}, #{expressFee}, #{packageFee},
-            #{promotionFee}, #{refundAmount}, #{otherExpense}, #{receivedAmount}, #{profitAmount},
+            #{promotionFee}, #{refundAmount}, #{otherExpense}, #{feeConfig}, #{receivedAmount}, #{profitAmount},
             #{paymentStatus}, #{shipmentStatus}, #{expressCompany}, #{expressNo}, #{remark},
             NOW(), NOW(), 0
         )

@@ -42,8 +42,25 @@
                p.brand, p.model, pi.device_no, pi.condition_desc,
                si.batch_id, b.batch_no, si.purchase_id, si.purchase_item_id, pu.purchase_no,
                si.quantity, si.sale_unit_price, si.sale_amount, si.cost_unit_price,
-               si.cost_amount, si.profit_amount, si.remark
+               si.cost_amount,
+               CASE WHEN COALESCE(sr.total_sale_amount, 0) = 0 THEN si.profit_amount
+                    ELSE ROUND(
+                        si.sale_amount
+                        - si.cost_amount
+                        - (
+                            COALESCE(sr.platform_fee, 0)
+                            + COALESCE(sr.express_fee, 0)
+                            + COALESCE(sr.package_fee, 0)
+                            + COALESCE(sr.promotion_fee, 0)
+                            + COALESCE(sr.other_expense, 0)
+                            + COALESCE(sr.refund_amount, 0)
+                          ) * si.sale_amount / sr.total_sale_amount,
+                        2
+                    )
+               END AS profit_amount,
+               si.remark
         FROM biz_sale_item si
+        INNER JOIN biz_sale_record sr ON sr.id = si.sale_record_id AND sr.deleted = 0
         INNER JOIN biz_product p ON p.id = si.product_id AND p.deleted = 0
         LEFT JOIN biz_product_type pt ON pt.id = p.product_type_id AND pt.deleted = 0
         INNER JOIN biz_inventory_batch b ON b.id = si.batch_id AND b.deleted = 0

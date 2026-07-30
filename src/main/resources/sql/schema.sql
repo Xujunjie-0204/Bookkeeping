@@ -152,6 +152,7 @@ CREATE TABLE IF NOT EXISTS biz_sale_record (
   promotion_fee DECIMAL(14,2) NOT NULL DEFAULT 0.00 COMMENT '推广费',
   refund_amount DECIMAL(14,2) NOT NULL DEFAULT 0.00 COMMENT '退款金额',
   other_expense DECIMAL(14,2) NOT NULL DEFAULT 0.00 COMMENT '其他费用',
+  fee_config TEXT DEFAULT NULL COMMENT '费用配置JSON，记录费率、无忧卖和费用明细',
   received_amount DECIMAL(14,2) NOT NULL DEFAULT 0.00 COMMENT '实际到账金额',
   profit_amount DECIMAL(14,2) NOT NULL DEFAULT 0.00 COMMENT '利润',
   payment_status TINYINT NOT NULL DEFAULT 0 COMMENT '付款状态',
