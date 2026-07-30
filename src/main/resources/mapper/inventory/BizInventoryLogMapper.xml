@@ -18,6 +18,13 @@
           AND business_id = #{purchaseId}
     </update>
 
+    <update id="updateSaleOutBusinessDate">
+        UPDATE biz_inventory_log
+        SET business_date = #{businessDate}
+        WHERE business_type = 'SALE_OUT'
+          AND business_id = #{saleRecordId}
+    </update>
+
     <delete id="deletePurchaseInLogs">
         DELETE FROM biz_inventory_log
         WHERE business_type = 'PURCHASE_IN'

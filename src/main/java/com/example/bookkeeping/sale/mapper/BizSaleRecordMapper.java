@@ -10,6 +10,8 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public interface BizSaleRecordMapper {
+    BizSaleRecord selectById(@Param("id") Long id);
+
     BizSaleRecord selectByRecordNo(@Param("recordNo") String recordNo);
 
     List<SaleVO> selectPage(@Param("keyword") String keyword,
@@ -31,4 +33,6 @@ public interface BizSaleRecordMapper {
                      @Param("totalCostAmount") BigDecimal totalCostAmount,
                      @Param("receivedAmount") BigDecimal receivedAmount,
                      @Param("profitAmount") BigDecimal profitAmount);
+
+    int updateEditableById(BizSaleRecord record);
 }

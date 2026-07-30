@@ -4,6 +4,7 @@ import com.example.bookkeeping.common.api.ApiResult;
 import com.example.bookkeeping.common.page.PageResult;
 import com.example.bookkeeping.sale.dto.SaleQueryRequest;
 import com.example.bookkeeping.sale.dto.SaveSaleRequest;
+import com.example.bookkeeping.sale.dto.UpdateSaleRequest;
 import com.example.bookkeeping.sale.service.SaleService;
 import com.example.bookkeeping.sale.vo.SaleItemVO;
 import com.example.bookkeeping.sale.vo.SaleStockVO;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -58,6 +60,12 @@ public class SaleController {
     @Operation(summary = "新增销售订单并出库")
     public ApiResult<SaleVO> create(@Valid @RequestBody SaveSaleRequest request) {
         return ApiResult.success(saleService.create(request));
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "修改销售订单普通信息")
+    public ApiResult<SaleVO> update(@PathVariable Long id, @Valid @RequestBody UpdateSaleRequest request) {
+        return ApiResult.success(saleService.update(id, request));
     }
 
     @GetMapping("/{id}/items")

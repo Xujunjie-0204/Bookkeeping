@@ -81,6 +81,14 @@
         LIMIT 1
     </select>
 
+    <select id="selectById" resultMap="BizSaleRecordResultMap">
+        SELECT *
+        FROM biz_sale_record
+        WHERE id = #{id}
+          AND deleted = 0
+        LIMIT 1
+    </select>
+
     <select id="selectPage" resultMap="SaleVOResultMap">
         SELECT sr.id, sr.record_no, sr.business_date, sr.platform, sr.platform_order_no,
                GROUP_CONCAT(DISTINCT p.product_name ORDER BY p.product_name SEPARATOR '、') AS product_name,
@@ -138,6 +146,23 @@
             total_cost_amount = #{totalCostAmount},
             received_amount = #{receivedAmount},
             profit_amount = #{profitAmount},
+            updated_at = NOW()
+        WHERE id = #{id}
+          AND deleted = 0
+    </update>
+
+    <update id="updateEditableById" parameterType="com.example.bookkeeping.sale.entity.BizSaleRecord">
+        UPDATE biz_sale_record
+        SET business_date = #{businessDate},
+            platform = #{platform},
+            platform_order_no = #{platformOrderNo},
+            buyer_name = #{buyerName},
+            buyer_phone = #{buyerPhone},
+            payment_status = #{paymentStatus},
+            shipment_status = #{shipmentStatus},
+            express_company = #{expressCompany},
+            express_no = #{expressNo},
+            remark = #{remark},
             updated_at = NOW()
         WHERE id = #{id}
           AND deleted = 0

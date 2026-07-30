@@ -10,5 +10,7 @@ public interface BizInventoryLogMapper {
 
     int updatePurchaseInBusinessDate(@Param("purchaseId") Long purchaseId, @Param("businessDate") LocalDate businessDate);
 
+    int updateSaleOutBusinessDate(@Param("saleRecordId") Long saleRecordId, @Param("businessDate") LocalDate businessDate);
+
     int deletePurchaseInLogs(Long purchaseId);
 }

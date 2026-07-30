@@ -11,6 +11,7 @@ import com.example.bookkeeping.purchase.mapper.BizPurchaseMapper;
 import com.example.bookkeeping.sale.dto.SaleQueryRequest;
 import com.example.bookkeeping.sale.dto.SaveSaleItemRequest;
 import com.example.bookkeeping.sale.dto.SaveSaleRequest;
+import com.example.bookkeeping.sale.dto.UpdateSaleRequest;
 import com.example.bookkeeping.sale.entity.BizSaleItem;
 import com.example.bookkeeping.sale.entity.BizSaleRecord;
 import com.example.bookkeeping.sale.mapper.BizSaleItemMapper;
@@ -169,6 +170,33 @@ public class SaleServiceImpl implements SaleService {
         }
 
         List<SaleVO> list = saleRecordMapper.selectPage(recordNo, null, null, null, null);
+        return list.isEmpty() ? null : list.get(0);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public SaleVO update(Long id, UpdateSaleRequest request) {
+        BizSaleRecord existing = saleRecordMapper.selectById(id);
+        if (existing == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND, "销售单不存在");
+        }
+
+        BizSaleRecord record = new BizSaleRecord();
+        record.setId(id);
+        record.setBusinessDate(request.getBusinessDate());
+        record.setPlatform(request.getPlatform().trim());
+        record.setPlatformOrderNo(trimToNull(request.getPlatformOrderNo()));
+        record.setBuyerName(trimToNull(request.getBuyerName()));
+        record.setBuyerPhone(trimToNull(request.getBuyerPhone()));
+        record.setPaymentStatus(request.getPaymentStatus() == null ? existing.getPaymentStatus() : request.getPaymentStatus());
+        record.setShipmentStatus(request.getShipmentStatus() == null ? existing.getShipmentStatus() : request.getShipmentStatus());
+        record.setExpressCompany(trimToNull(request.getExpressCompany()));
+        record.setExpressNo(trimToNull(request.getExpressNo()));
+        record.setRemark(trimToNull(request.getRemark()));
+        saleRecordMapper.updateEditableById(record);
+        inventoryLogMapper.updateSaleOutBusinessDate(id, request.getBusinessDate());
+
+        List<SaleVO> list = saleRecordMapper.selectPage(existing.getRecordNo(), null, null, null, null);
         return list.isEmpty() ? null : list.get(0);
     }
 
