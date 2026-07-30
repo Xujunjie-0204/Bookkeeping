@@ -97,6 +97,31 @@
         LIMIT 1
     </select>
 
+    <select id="selectVOById" resultMap="SaleVOResultMap">
+        SELECT sr.id, sr.record_no, sr.business_date, sr.platform, sr.platform_order_no,
+               GROUP_CONCAT(DISTINCT p.product_name ORDER BY p.product_name SEPARATOR '、') AS product_name,
+               GROUP_CONCAT(DISTINCT pu.purchase_no ORDER BY pu.purchase_no SEPARATOR '、') AS purchase_no,
+               sr.buyer_name, sr.buyer_phone, COALESCE(SUM(si.quantity), 0) AS item_count,
+               sr.total_sale_amount, sr.total_cost_amount, sr.platform_fee, sr.express_fee,
+               sr.package_fee, sr.promotion_fee, sr.refund_amount, sr.other_expense,
+               sr.fee_config, sr.received_amount, sr.profit_amount,
+               sr.payment_status, sr.shipment_status, sr.express_company, sr.express_no,
+               sr.remark, sr.created_at
+        FROM biz_sale_record sr
+        LEFT JOIN biz_sale_item si ON si.sale_record_id = sr.id AND si.deleted = 0
+        LEFT JOIN biz_product p ON p.id = si.product_id AND p.deleted = 0
+        LEFT JOIN biz_purchase pu ON pu.id = si.purchase_id AND pu.deleted = 0
+        WHERE sr.id = #{id}
+          AND sr.deleted = 0
+        GROUP BY sr.id, sr.record_no, sr.business_date, sr.platform, sr.platform_order_no,
+                 sr.buyer_name, sr.buyer_phone, sr.total_sale_amount, sr.total_cost_amount,
+                 sr.platform_fee, sr.express_fee, sr.package_fee, sr.promotion_fee,
+                 sr.refund_amount, sr.other_expense, sr.fee_config,
+                 sr.received_amount, sr.profit_amount, sr.payment_status, sr.shipment_status,
+                 sr.express_company, sr.express_no, sr.remark, sr.created_at
+        LIMIT 1
+    </select>
+
     <select id="selectPage" resultMap="SaleVOResultMap">
         SELECT sr.id, sr.record_no, sr.business_date, sr.platform, sr.platform_order_no,
                GROUP_CONCAT(DISTINCT p.product_name ORDER BY p.product_name SEPARATOR '、') AS product_name,

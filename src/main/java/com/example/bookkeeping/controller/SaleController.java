@@ -49,6 +49,12 @@ public class SaleController {
         return ApiResult.success(saleService.summary(request));
     }
 
+    @GetMapping("/{id}")
+    @Operation(summary = "查询销售订单详情")
+    public ApiResult<SaleVO> detail(@PathVariable Long id) {
+        return ApiResult.success(saleService.detail(id));
+    }
+
     @GetMapping("/available-stock")
     @Operation(summary = "查询可销售库存批次")
     public ApiResult<List<SaleStockVO>> availableStock(@RequestParam(required = false) String keyword,

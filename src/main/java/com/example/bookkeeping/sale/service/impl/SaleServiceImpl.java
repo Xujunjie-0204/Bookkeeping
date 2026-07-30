@@ -85,6 +85,11 @@ public class SaleServiceImpl implements SaleService {
     }
 
     @Override
+    public SaleVO detail(Long id) {
+        return saleRecordMapper.selectVOById(id);
+    }
+
+    @Override
     public List<SaleStockVO> availableStock(String keyword, List<Long> productTypeIds) {
         return inventoryBatchMapper.selectAvailableForSale(trimToNull(keyword), productTypeIds);
     }

@@ -14,6 +14,8 @@ public interface BizSaleRecordMapper {
 
     BizSaleRecord selectByRecordNo(@Param("recordNo") String recordNo);
 
+    SaleVO selectVOById(@Param("id") Long id);
+
     List<SaleVO> selectPage(@Param("keyword") String keyword,
                             @Param("paymentStatus") Integer paymentStatus,
                             @Param("shipmentStatus") Integer shipmentStatus,

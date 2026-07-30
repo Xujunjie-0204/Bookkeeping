@@ -16,6 +16,8 @@ public interface SaleService {
 
     SaleSummaryVO summary(SaleQueryRequest request);
 
+    SaleVO detail(Long id);
+
     List<SaleStockVO> availableStock(String keyword, List<Long> productTypeIds);
 
     SaleVO create(SaveSaleRequest request);
