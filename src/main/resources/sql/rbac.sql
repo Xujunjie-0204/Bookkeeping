@@ -85,6 +85,7 @@ INSERT INTO sys_menu (
   (21, 0, '采购进货', 'C', '/purchases', 'PurchaseManageView', 'purchase:view', 'ShoppingCart', 30, 1, 1, NULL, NOW(), NOW(), 0),
   (22, 21, '新增进货', 'F', NULL, NULL, 'purchase:create', NULL, 10, 0, 1, NULL, NOW(), NOW(), 0),
   (23, 21, '删除进货', 'F', NULL, NULL, 'purchase:delete', NULL, 20, 0, 1, NULL, NOW(), NOW(), 0),
+  (24, 0, '库存管理', 'C', '/inventory', 'InventoryManageView', 'inventory:view', 'Box', 35, 1, 1, NULL, NOW(), NOW(), 0),
   (2, 0, '系统管理', 'M', '/system', NULL, 'system:view', 'Setting', 90, 1, 1, NULL, NOW(), NOW(), 0),
   (3, 2, '菜单管理', 'C', '/system/menus', 'MenuManageView', 'system:menu:view', 'Menu', 10, 1, 1, NULL, NOW(), NOW(), 0),
   (4, 3, '新增菜单', 'F', NULL, NULL, 'system:menu:create', NULL, 10, 0, 1, NULL, NOW(), NOW(), 0),

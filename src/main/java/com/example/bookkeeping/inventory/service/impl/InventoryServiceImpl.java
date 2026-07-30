@@ -25,7 +25,18 @@ public class InventoryServiceImpl implements InventoryService {
         return PageResult.of(inventoryBatchMapper.selectSummaryPage(
                 StringUtils.hasText(request.getKeyword()) ? request.getKeyword().trim() : null,
                 request.getProductTypeId(),
+                request.getProductTypeIds(),
                 Boolean.TRUE.equals(request.getWarningOnly())
         ));
+    }
+
+    @Override
+    public InventorySummaryVO summary(InventoryQueryRequest request) {
+        return inventoryBatchMapper.selectTotalSummary(
+                StringUtils.hasText(request.getKeyword()) ? request.getKeyword().trim() : null,
+                request.getProductTypeId(),
+                request.getProductTypeIds(),
+                Boolean.TRUE.equals(request.getWarningOnly())
+        );
     }
 }

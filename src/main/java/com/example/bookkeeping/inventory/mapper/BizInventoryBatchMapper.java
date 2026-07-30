@@ -12,7 +12,13 @@ public interface BizInventoryBatchMapper {
 
     List<InventorySummaryVO> selectSummaryPage(@Param("keyword") String keyword,
                                                @Param("productTypeId") Long productTypeId,
+                                               @Param("productTypeIds") List<Long> productTypeIds,
                                                @Param("warningOnly") Boolean warningOnly);
+
+    InventorySummaryVO selectTotalSummary(@Param("keyword") String keyword,
+                                          @Param("productTypeId") Long productTypeId,
+                                          @Param("productTypeIds") List<Long> productTypeIds,
+                                          @Param("warningOnly") Boolean warningOnly);
 
     int updatePurchaseDate(@Param("purchaseId") Long purchaseId, @Param("purchaseDate") LocalDate purchaseDate);
 

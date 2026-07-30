@@ -27,4 +27,10 @@ public class InventoryController {
     public ApiResult<PageResult<InventorySummaryVO>> page(@ModelAttribute InventoryQueryRequest request) {
         return ApiResult.success(inventoryService.page(request));
     }
+
+    @GetMapping("/summary")
+    @Operation(summary = "查询当前库存统计")
+    public ApiResult<InventorySummaryVO> summary(@ModelAttribute InventoryQueryRequest request) {
+        return ApiResult.success(inventoryService.summary(request));
+    }
 }

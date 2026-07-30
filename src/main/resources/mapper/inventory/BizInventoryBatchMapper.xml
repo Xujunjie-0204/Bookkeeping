@@ -55,7 +55,13 @@
             OR p.brand LIKE CONCAT('%', #{keyword}, '%')
             OR p.model LIKE CONCAT('%', #{keyword}, '%'))
         </if>
-        <if test="productTypeId != null">
+        <if test="productTypeIds != null and productTypeIds.size() > 0">
+          AND p.product_type_id IN
+          <foreach collection="productTypeIds" item="typeId" open="(" separator="," close=")">
+            #{typeId}
+          </foreach>
+        </if>
+        <if test="productTypeId != null and (productTypeIds == null or productTypeIds.size() == 0)">
           AND p.product_type_id = #{productTypeId}
         </if>
         GROUP BY p.id, p.product_code, p.product_name, p.product_type_id, pt.type_name,
@@ -64,6 +70,45 @@
           HAVING COALESCE(SUM(b.available_quantity), 0) &lt;= p.warning_stock
         </if>
         ORDER BY available_quantity ASC, p.id DESC
+    </select>
+
+    <select id="selectTotalSummary" resultMap="InventorySummaryResultMap">
+        SELECT COALESCE(SUM(t.initial_quantity), 0) AS initial_quantity,
+               COALESCE(SUM(t.available_quantity), 0) AS available_quantity,
+               COALESCE(SUM(t.locked_quantity), 0) AS locked_quantity,
+               COALESCE(SUM(t.sold_quantity), 0) AS sold_quantity,
+               COALESCE(SUM(t.stock_amount), 0) AS stock_amount
+        FROM (
+            SELECT p.id,
+                   COALESCE(SUM(b.initial_quantity), 0) AS initial_quantity,
+                   COALESCE(SUM(b.available_quantity), 0) AS available_quantity,
+                   COALESCE(SUM(b.locked_quantity), 0) AS locked_quantity,
+                   COALESCE(SUM(b.sold_quantity), 0) AS sold_quantity,
+                   COALESCE(SUM(b.available_quantity * b.unit_cost), 0) AS stock_amount,
+                   p.warning_stock
+            FROM biz_product p
+            LEFT JOIN biz_inventory_batch b ON b.product_id = p.id AND b.deleted = 0
+            WHERE p.deleted = 0
+            <if test="keyword != null and keyword != ''">
+              AND (p.product_code LIKE CONCAT('%', #{keyword}, '%')
+                OR p.product_name LIKE CONCAT('%', #{keyword}, '%')
+                OR p.brand LIKE CONCAT('%', #{keyword}, '%')
+                OR p.model LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+            <if test="productTypeIds != null and productTypeIds.size() > 0">
+              AND p.product_type_id IN
+              <foreach collection="productTypeIds" item="typeId" open="(" separator="," close=")">
+                #{typeId}
+              </foreach>
+            </if>
+            <if test="productTypeId != null and (productTypeIds == null or productTypeIds.size() == 0)">
+              AND p.product_type_id = #{productTypeId}
+            </if>
+            GROUP BY p.id, p.warning_stock
+            <if test="warningOnly != null and warningOnly">
+              HAVING COALESCE(SUM(b.available_quantity), 0) &lt;= p.warning_stock
+            </if>
+        ) t
     </select>
 
     <update id="updatePurchaseDate">

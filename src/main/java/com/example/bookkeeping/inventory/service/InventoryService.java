@@ -6,4 +6,6 @@ import com.example.bookkeeping.inventory.vo.InventorySummaryVO;
 
 public interface InventoryService {
     PageResult<InventorySummaryVO> page(InventoryQueryRequest request);
+
+    InventorySummaryVO summary(InventoryQueryRequest request);
 }
