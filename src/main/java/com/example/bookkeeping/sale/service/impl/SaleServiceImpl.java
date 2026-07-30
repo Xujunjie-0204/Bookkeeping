@@ -3,6 +3,8 @@ package com.example.bookkeeping.sale.service.impl;
 import com.example.bookkeeping.common.exception.BusinessException;
 import com.example.bookkeeping.common.exception.ErrorCode;
 import com.example.bookkeeping.common.page.PageResult;
+import com.example.bookkeeping.expense.entity.BizExpense;
+import com.example.bookkeeping.expense.mapper.BizExpenseMapper;
 import com.example.bookkeeping.inventory.entity.BizInventoryBatch;
 import com.example.bookkeeping.inventory.entity.BizInventoryLog;
 import com.example.bookkeeping.inventory.mapper.BizInventoryBatchMapper;
@@ -41,17 +43,20 @@ public class SaleServiceImpl implements SaleService {
     private final BizInventoryBatchMapper inventoryBatchMapper;
     private final BizInventoryLogMapper inventoryLogMapper;
     private final BizPurchaseMapper purchaseMapper;
+    private final BizExpenseMapper expenseMapper;
 
     public SaleServiceImpl(BizSaleRecordMapper saleRecordMapper,
                            BizSaleItemMapper saleItemMapper,
                            BizInventoryBatchMapper inventoryBatchMapper,
                            BizInventoryLogMapper inventoryLogMapper,
-                           BizPurchaseMapper purchaseMapper) {
+                           BizPurchaseMapper purchaseMapper,
+                           BizExpenseMapper expenseMapper) {
         this.saleRecordMapper = saleRecordMapper;
         this.saleItemMapper = saleItemMapper;
         this.inventoryBatchMapper = inventoryBatchMapper;
         this.inventoryLogMapper = inventoryLogMapper;
         this.purchaseMapper = purchaseMapper;
+        this.expenseMapper = expenseMapper;
     }
 
     @Override
@@ -165,6 +170,7 @@ public class SaleServiceImpl implements SaleService {
         BigDecimal receivedAmount = totalSaleAmount.subtract(record.getRefundAmount());
         BigDecimal profitAmount = receivedAmount.subtract(totalCostAmount).subtract(expenseAmount);
         saleRecordMapper.updateTotals(record.getId(), totalSaleAmount, totalCostAmount, receivedAmount, profitAmount);
+        createSaleExpense(record);
         for (Long purchaseId : purchaseIds) {
             purchaseMapper.refreshSaleStatus(purchaseId);
         }
@@ -221,8 +227,33 @@ public class SaleServiceImpl implements SaleService {
         return log;
     }
 
+    private void createSaleExpense(BizSaleRecord record) {
+        if (record.getExpressFee().compareTo(BigDecimal.ZERO) <= 0) {
+            return;
+        }
+        BigDecimal amount = record.getExpressFee().add(record.getOtherExpense());
+        BizExpense expense = new BizExpense();
+        expense.setExpenseNo(generateExpenseNo());
+        expense.setExpenseDate(record.getBusinessDate());
+        expense.setExpenseType("物流包装");
+        expense.setExpenseName("销售快递及包装费");
+        expense.setAmount(amount);
+        expense.setExpressCompany(record.getExpressCompany());
+        expense.setShipmentCount(1);
+        expense.setRelatedSaleId(record.getId());
+        expense.setRelatedOrderNo(record.getRecordNo());
+        expense.setIndependentFlag(0);
+        expense.setRemark("销售单自动生成，快递费+" + record.getExpressFee() + "，包装费+" + record.getOtherExpense());
+        expenseMapper.insert(expense);
+    }
+
     private String generateSaleNo() {
         return "S" + LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE)
+                + UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase();
+    }
+
+    private String generateExpenseNo() {
+        return "E" + LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE)
                 + UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase();
     }
 
