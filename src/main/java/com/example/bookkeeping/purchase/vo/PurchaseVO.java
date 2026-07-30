@@ -12,6 +12,7 @@ public class PurchaseVO {
     private String purchaseNo;
     private String platform;
     private String platformOrderNo;
+    private String productName;
     private String supplierName;
     private String sellerAccount;
     private LocalDate purchaseDate;

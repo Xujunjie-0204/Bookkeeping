@@ -11,11 +11,15 @@ import com.example.bookkeeping.product.mapper.BizProductMapper;
 import com.example.bookkeeping.purchase.dto.PurchaseQueryRequest;
 import com.example.bookkeeping.purchase.dto.SavePurchaseItemRequest;
 import com.example.bookkeeping.purchase.dto.SavePurchaseRequest;
+import com.example.bookkeeping.purchase.dto.UpdatePurchaseItemRequest;
+import com.example.bookkeeping.purchase.dto.UpdatePurchaseRequest;
 import com.example.bookkeeping.purchase.entity.BizPurchase;
 import com.example.bookkeeping.purchase.entity.BizPurchaseItem;
 import com.example.bookkeeping.purchase.mapper.BizPurchaseItemMapper;
 import com.example.bookkeeping.purchase.mapper.BizPurchaseMapper;
 import com.example.bookkeeping.purchase.service.PurchaseService;
+import com.example.bookkeeping.purchase.vo.PurchaseItemVO;
+import com.example.bookkeeping.purchase.vo.PurchaseSummaryVO;
 import com.example.bookkeeping.purchase.vo.PurchaseVO;
 import com.github.pagehelper.PageHelper;
 import org.springframework.stereotype.Service;
@@ -54,7 +58,24 @@ public class PurchaseServiceImpl implements PurchaseService {
         int pageNum = request.getPageNum() == null || request.getPageNum() < 1 ? 1 : request.getPageNum();
         int pageSize = request.getPageSize() == null || request.getPageSize() < 1 ? 10 : request.getPageSize();
         PageHelper.startPage(pageNum, pageSize);
-        return PageResult.of(purchaseMapper.selectPage(trimToNull(request.getKeyword()), request.getPurchaseStatus()));
+        return PageResult.of(purchaseMapper.selectPage(
+                trimToNull(request.getKeyword()),
+                request.getPurchaseStatus(),
+                request.getStartDate(),
+                request.getEndDate(),
+                request.getProductIds()
+        ));
+    }
+
+    @Override
+    public PurchaseSummaryVO summary(PurchaseQueryRequest request) {
+        return purchaseMapper.selectSummary(
+                trimToNull(request.getKeyword()),
+                request.getPurchaseStatus(),
+                request.getStartDate(),
+                request.getEndDate(),
+                request.getProductIds()
+        );
     }
 
     @Override
@@ -113,8 +134,51 @@ public class PurchaseServiceImpl implements PurchaseService {
             inventoryLogMapper.insert(createInventoryLog(purchase, item, batch));
         }
 
-        List<PurchaseVO> list = purchaseMapper.selectPage(purchaseNo, null);
+        List<PurchaseVO> list = purchaseMapper.selectPage(purchaseNo, null, null, null, null);
         return list.isEmpty() ? null : list.get(0);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public PurchaseVO update(Long id, UpdatePurchaseRequest request) {
+        BizPurchase existing = purchaseMapper.selectById(id);
+        if (existing == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND, "采购单不存在");
+        }
+
+        BizPurchase purchase = new BizPurchase();
+        purchase.setId(id);
+        purchase.setPlatform(request.getPlatform().trim());
+        purchase.setPlatformOrderNo(trimToNull(request.getPlatformOrderNo()));
+        purchase.setSupplierName(trimToNull(request.getSupplierName()));
+        purchase.setSellerAccount(trimToNull(request.getSellerAccount()));
+        purchase.setPurchaseDate(request.getPurchaseDate());
+        purchase.setPaymentMethod(trimToNull(request.getPaymentMethod()));
+        purchase.setRemark(trimToNull(request.getRemark()));
+        purchaseMapper.updateEditableById(purchase);
+        inventoryBatchMapper.updatePurchaseDate(id, request.getPurchaseDate());
+        inventoryLogMapper.updatePurchaseInBusinessDate(id, request.getPurchaseDate());
+
+        for (UpdatePurchaseItemRequest itemRequest : request.getItems()) {
+            BizPurchaseItem item = new BizPurchaseItem();
+            item.setId(itemRequest.getId());
+            item.setPurchaseId(id);
+            item.setConditionDesc(trimToNull(itemRequest.getConditionDesc()));
+            item.setDeviceNo(trimToNull(itemRequest.getDeviceNo()));
+            item.setRemark(trimToNull(itemRequest.getRemark()));
+            purchaseItemMapper.updateEditableById(item);
+        }
+
+        List<PurchaseVO> list = purchaseMapper.selectPage(existing.getPurchaseNo(), null, null, null, null);
+        return list.isEmpty() ? null : list.get(0);
+    }
+
+    @Override
+    public List<PurchaseItemVO> items(Long id) {
+        if (purchaseMapper.selectById(id) == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND, "采购单不存在");
+        }
+        return purchaseItemMapper.selectVOByPurchaseId(id);
     }
 
     @Override

@@ -24,6 +24,59 @@
         <result column="deleted" property="deleted"/>
     </resultMap>
 
+    <resultMap id="PurchaseVOResultMap" type="com.example.bookkeeping.purchase.vo.PurchaseVO">
+        <id column="id" property="id"/>
+        <result column="purchase_no" property="purchaseNo"/>
+        <result column="platform" property="platform"/>
+        <result column="platform_order_no" property="platformOrderNo"/>
+        <result column="productName" property="productName"/>
+        <result column="supplier_name" property="supplierName"/>
+        <result column="seller_account" property="sellerAccount"/>
+        <result column="purchase_date" property="purchaseDate"/>
+        <result column="item_count" property="itemCount"/>
+        <result column="purchase_status" property="purchaseStatus"/>
+        <result column="goods_amount" property="goodsAmount"/>
+        <result column="freight_amount" property="freightAmount"/>
+        <result column="discount_amount" property="discountAmount"/>
+        <result column="other_amount" property="otherAmount"/>
+        <result column="pay_amount" property="payAmount"/>
+        <result column="payment_method" property="paymentMethod"/>
+        <result column="received_at" property="receivedAt"/>
+        <result column="remark" property="remark"/>
+        <result column="created_at" property="createdAt"/>
+    </resultMap>
+
+    <sql id="PurchaseFilterSql">
+        WHERE p.deleted = 0
+        <if test="keyword != null and keyword != ''">
+          AND (p.purchase_no LIKE CONCAT('%', #{keyword}, '%')
+            OR p.platform_order_no LIKE CONCAT('%', #{keyword}, '%')
+            OR p.seller_account LIKE CONCAT('%', #{keyword}, '%')
+            OR bp.product_name LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="purchaseStatus != null">
+          AND p.purchase_status = #{purchaseStatus}
+        </if>
+        <if test="startDate != null">
+          AND p.purchase_date &gt;= #{startDate}
+        </if>
+        <if test="endDate != null">
+          AND p.purchase_date &lt;= #{endDate}
+        </if>
+        <if test="productIds != null and productIds.size() > 0">
+          AND EXISTS (
+            SELECT 1
+            FROM biz_purchase_item pi_filter
+            WHERE pi_filter.purchase_id = p.id
+              AND pi_filter.deleted = 0
+              AND pi_filter.product_id IN
+              <foreach collection="productIds" item="productId" open="(" separator="," close=")">
+                #{productId}
+              </foreach>
+          )
+        </if>
+    </sql>
+
     <select id="selectById" resultMap="BizPurchaseResultMap">
         SELECT * FROM biz_purchase WHERE id = #{id} AND deleted = 0 LIMIT 1
     </select>
@@ -32,21 +85,34 @@
         SELECT * FROM biz_purchase WHERE purchase_no = #{purchaseNo} AND deleted = 0 LIMIT 1
     </select>
 
-    <select id="selectPage" resultType="com.example.bookkeeping.purchase.vo.PurchaseVO">
-        SELECT id, purchase_no, platform, platform_order_no, supplier_name, seller_account,
-               purchase_date, item_count, purchase_status, goods_amount, freight_amount,
-               discount_amount, other_amount, pay_amount, payment_method, received_at, remark, created_at
-        FROM biz_purchase
-        WHERE deleted = 0
-        <if test="keyword != null and keyword != ''">
-          AND (purchase_no LIKE CONCAT('%', #{keyword}, '%')
-            OR platform_order_no LIKE CONCAT('%', #{keyword}, '%')
-            OR seller_account LIKE CONCAT('%', #{keyword}, '%'))
-        </if>
-        <if test="purchaseStatus != null">
-          AND purchase_status = #{purchaseStatus}
-        </if>
-        ORDER BY purchase_date DESC, id DESC
+    <select id="selectPage" resultMap="PurchaseVOResultMap">
+        SELECT p.id, p.purchase_no, p.platform, p.platform_order_no,
+               GROUP_CONCAT(DISTINCT bp.product_name ORDER BY bp.product_name SEPARATOR '、') AS productName,
+               p.supplier_name, p.seller_account, p.purchase_date, p.item_count, p.purchase_status,
+               p.goods_amount, p.freight_amount, p.discount_amount, p.other_amount, p.pay_amount,
+               p.payment_method, p.received_at, p.remark, p.created_at
+        FROM biz_purchase p
+        LEFT JOIN biz_purchase_item pi_name ON pi_name.purchase_id = p.id AND pi_name.deleted = 0
+        LEFT JOIN biz_product bp ON bp.id = pi_name.product_id AND bp.deleted = 0
+        <include refid="PurchaseFilterSql"/>
+        GROUP BY p.id, p.purchase_no, p.platform, p.platform_order_no, p.supplier_name, p.seller_account,
+                 p.purchase_date, p.item_count, p.purchase_status, p.goods_amount, p.freight_amount,
+                 p.discount_amount, p.other_amount, p.pay_amount, p.payment_method, p.received_at,
+                 p.remark, p.created_at
+        ORDER BY p.purchase_date DESC, p.id DESC
+    </select>
+
+    <select id="selectSummary" resultType="com.example.bookkeeping.purchase.vo.PurchaseSummaryVO">
+        SELECT COUNT(1) AS orderCount,
+               COALESCE(SUM(t.pay_amount), 0) AS totalPurchaseAmount
+        FROM (
+            SELECT p.id, p.pay_amount
+            FROM biz_purchase p
+            LEFT JOIN biz_purchase_item pi_name ON pi_name.purchase_id = p.id AND pi_name.deleted = 0
+            LEFT JOIN biz_product bp ON bp.id = pi_name.product_id AND bp.deleted = 0
+            <include refid="PurchaseFilterSql"/>
+            GROUP BY p.id, p.pay_amount
+        ) t
     </select>
 
     <insert id="insert" parameterType="com.example.bookkeeping.purchase.entity.BizPurchase" useGeneratedKeys="true" keyProperty="id">
@@ -60,6 +126,20 @@
             #{payAmount}, #{invoiceStatus}, #{paymentMethod}, #{receivedAt}, #{remark}, NOW(), NOW(), 0
         )
     </insert>
+
+    <update id="updateEditableById" parameterType="com.example.bookkeeping.purchase.entity.BizPurchase">
+        UPDATE biz_purchase
+        SET platform = #{platform},
+            platform_order_no = #{platformOrderNo},
+            supplier_name = #{supplierName},
+            seller_account = #{sellerAccount},
+            purchase_date = #{purchaseDate},
+            payment_method = #{paymentMethod},
+            remark = #{remark},
+            updated_at = NOW()
+        WHERE id = #{id}
+          AND deleted = 0
+    </update>
 
     <update id="deleteById">
         UPDATE biz_purchase SET deleted = 1, updated_at = NOW() WHERE id = #{id} AND deleted = 0

@@ -1,6 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.bookkeeping.purchase.mapper.BizPurchaseItemMapper">
+    <resultMap id="PurchaseItemVOResultMap" type="com.example.bookkeeping.purchase.vo.PurchaseItemVO">
+        <id column="id" property="id"/>
+        <result column="product_id" property="productId"/>
+        <result column="product_code" property="productCode"/>
+        <result column="product_name" property="productName"/>
+        <result column="product_type_name" property="productTypeName"/>
+        <result column="brand" property="brand"/>
+        <result column="model" property="model"/>
+        <result column="specification" property="specification"/>
+        <result column="condition_desc" property="conditionDesc"/>
+        <result column="device_no" property="deviceNo"/>
+        <result column="quantity" property="quantity"/>
+        <result column="unit_price" property="unitPrice"/>
+        <result column="total_amount" property="totalAmount"/>
+        <result column="check_status" property="checkStatus"/>
+        <result column="remark" property="remark"/>
+    </resultMap>
+
     <insert id="insert" parameterType="com.example.bookkeeping.purchase.entity.BizPurchaseItem" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO biz_purchase_item (
             purchase_id, product_id, condition_desc, device_no, quantity, unit_price,
@@ -10,6 +28,29 @@
             #{totalAmount}, #{checkStatus}, #{remark}, NOW(), NOW(), 0
         )
     </insert>
+
+    <select id="selectVOByPurchaseId" resultMap="PurchaseItemVOResultMap">
+        SELECT pi.id, pi.product_id, p.product_code, p.product_name, pt.type_name AS product_type_name,
+               p.brand, p.model, p.specification, pi.condition_desc, pi.device_no,
+               pi.quantity, pi.unit_price, pi.total_amount, pi.check_status, pi.remark
+        FROM biz_purchase_item pi
+        INNER JOIN biz_product p ON p.id = pi.product_id AND p.deleted = 0
+        LEFT JOIN biz_product_type pt ON pt.id = p.product_type_id AND pt.deleted = 0
+        WHERE pi.purchase_id = #{purchaseId}
+          AND pi.deleted = 0
+        ORDER BY pi.id ASC
+    </select>
+
+    <update id="updateEditableById" parameterType="com.example.bookkeeping.purchase.entity.BizPurchaseItem">
+        UPDATE biz_purchase_item
+        SET condition_desc = #{conditionDesc},
+            device_no = #{deviceNo},
+            remark = #{remark},
+            updated_at = NOW()
+        WHERE id = #{id}
+          AND purchase_id = #{purchaseId}
+          AND deleted = 0
+    </update>
 
     <update id="deleteByPurchaseId">
         UPDATE biz_purchase_item

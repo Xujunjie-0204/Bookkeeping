@@ -11,6 +11,13 @@
         )
     </insert>
 
+    <update id="updatePurchaseInBusinessDate">
+        UPDATE biz_inventory_log
+        SET business_date = #{businessDate}
+        WHERE business_type = 'PURCHASE_IN'
+          AND business_id = #{purchaseId}
+    </update>
+
     <delete id="deletePurchaseInLogs">
         DELETE FROM biz_inventory_log
         WHERE business_type = 'PURCHASE_IN'
