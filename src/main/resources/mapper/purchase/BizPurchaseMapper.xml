@@ -58,10 +58,10 @@
           AND p.purchase_status = #{purchaseStatus}
         </if>
         <if test="startDate != null">
-          AND p.purchase_date &gt;= #{startDate}
+          AND DATE(p.purchase_date) &gt;= #{startDate}
         </if>
         <if test="endDate != null">
-          AND p.purchase_date &lt;= #{endDate}
+          AND DATE(p.purchase_date) &lt;= #{endDate}
         </if>
         <if test="productIds != null and productIds.size() > 0">
           AND EXISTS (

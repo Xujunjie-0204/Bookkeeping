@@ -24,6 +24,7 @@
         <jjwt.version>0.11.5</jjwt.version>
         <springdoc.version>1.6.10</springdoc.version>
         <poi.version>5.2.5</poi.version>
+        <tess4j.version>5.13.0</tess4j.version>
     </properties>
 
     <dependencies>
@@ -81,6 +82,11 @@
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
             <version>${poi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.tess4j</groupId>
+            <artifactId>tess4j</artifactId>
+            <version>${tess4j.version}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

@@ -3,7 +3,7 @@ package com.example.bookkeeping.sale.vo;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 public class SaleStockVO {
@@ -19,7 +19,7 @@ public class SaleStockVO {
     private Long purchaseId;
     private Long purchaseItemId;
     private String purchaseNo;
-    private LocalDate purchaseDate;
+    private LocalDateTime purchaseDate;
     private String platform;
     private String platformOrderNo;
     private String sellerAccount;

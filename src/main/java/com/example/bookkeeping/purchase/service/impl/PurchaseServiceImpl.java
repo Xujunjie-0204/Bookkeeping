@@ -157,7 +157,7 @@ public class PurchaseServiceImpl implements PurchaseService {
         purchase.setRemark(trimToNull(request.getRemark()));
         purchaseMapper.updateEditableById(purchase);
         inventoryBatchMapper.updatePurchaseDate(id, request.getPurchaseDate());
-        inventoryLogMapper.updatePurchaseInBusinessDate(id, request.getPurchaseDate());
+        inventoryLogMapper.updatePurchaseInBusinessDate(id, request.getPurchaseDate().toLocalDate());
 
         for (UpdatePurchaseItemRequest itemRequest : request.getItems()) {
             BizPurchaseItem item = new BizPurchaseItem();
@@ -221,7 +221,7 @@ public class PurchaseServiceImpl implements PurchaseService {
         log.setBeforeQuantity(0);
         log.setAfterQuantity(item.getQuantity());
         log.setUnitCost(item.getUnitPrice());
-        log.setBusinessDate(purchase.getPurchaseDate());
+        log.setBusinessDate(purchase.getPurchaseDate().toLocalDate());
         log.setRemark("采购入库");
         return log;
     }

@@ -1,12 +1,13 @@
 package com.example.bookkeeping.purchase.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +27,8 @@ public class UpdatePurchaseRequest {
     private String sellerAccount;
 
     @NotNull(message = "采购日期不能为空")
-    private LocalDate purchaseDate;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime purchaseDate;
 
     @Size(max = 50, message = "付款方式长度不能超过50位")
     private String paymentMethod;

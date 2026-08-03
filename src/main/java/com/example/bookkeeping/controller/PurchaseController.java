@@ -5,12 +5,15 @@ import com.example.bookkeeping.common.page.PageResult;
 import com.example.bookkeeping.purchase.dto.PurchaseQueryRequest;
 import com.example.bookkeeping.purchase.dto.SavePurchaseRequest;
 import com.example.bookkeeping.purchase.dto.UpdatePurchaseRequest;
+import com.example.bookkeeping.purchase.service.PurchaseOcrService;
 import com.example.bookkeeping.purchase.service.PurchaseService;
 import com.example.bookkeeping.purchase.vo.PurchaseItemVO;
+import com.example.bookkeeping.purchase.vo.PurchaseOcrVO;
 import com.example.bookkeeping.purchase.vo.PurchaseSummaryVO;
 import com.example.bookkeeping.purchase.vo.PurchaseVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +23,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -31,9 +36,11 @@ import java.util.List;
 @Tag(name = "采购进货管理")
 public class PurchaseController {
     private final PurchaseService purchaseService;
+    private final PurchaseOcrService purchaseOcrService;
 
-    public PurchaseController(PurchaseService purchaseService) {
+    public PurchaseController(PurchaseService purchaseService, PurchaseOcrService purchaseOcrService) {
         this.purchaseService = purchaseService;
+        this.purchaseOcrService = purchaseOcrService;
     }
 
     @GetMapping
@@ -52,6 +59,12 @@ public class PurchaseController {
     @Operation(summary = "新增采购进货单并入库")
     public ApiResult<PurchaseVO> create(@Valid @RequestBody SavePurchaseRequest request) {
         return ApiResult.success(purchaseService.create(request));
+    }
+
+    @PostMapping(value = "/ocr", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "OCR识别采购订单截图")
+    public ApiResult<PurchaseOcrVO> ocr(@RequestParam("file") MultipartFile file) {
+        return ApiResult.success(purchaseOcrService.recognize(file));
     }
 
     @PutMapping("/{id}")

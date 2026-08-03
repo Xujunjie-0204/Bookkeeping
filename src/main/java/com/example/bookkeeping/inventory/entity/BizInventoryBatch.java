@@ -3,7 +3,6 @@ package com.example.bookkeeping.inventory.entity;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -13,7 +12,7 @@ public class BizInventoryBatch {
     private Long productId;
     private Long purchaseId;
     private Long purchaseItemId;
-    private LocalDate purchaseDate;
+    private LocalDateTime purchaseDate;
     private BigDecimal unitCost;
     private Integer initialQuantity;
     private Integer availableQuantity;

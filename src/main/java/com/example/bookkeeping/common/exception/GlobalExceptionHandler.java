@@ -7,6 +7,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -62,6 +63,12 @@ public class GlobalExceptionHandler {
                 .map(ConstraintViolation::getMessage)
                 .collect(Collectors.joining("; "));
         return ApiResult.fail(ErrorCode.BAD_REQUEST.getCode(), message);
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiResult<Void> handleMaxUploadSizeExceeded(MaxUploadSizeExceededException ex) {
+        return ApiResult.fail(ErrorCode.BAD_REQUEST.getCode(), "上传文件过大，请上传 20MB 以内的图片或 PDF");
     }
 
     @ExceptionHandler(Exception.class)

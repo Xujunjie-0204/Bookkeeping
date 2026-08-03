@@ -5,7 +5,7 @@ import com.example.bookkeeping.inventory.vo.InventorySummaryVO;
 import com.example.bookkeeping.sale.vo.SaleStockVO;
 import org.apache.ibatis.annotations.Param;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface BizInventoryBatchMapper {
@@ -28,7 +28,7 @@ public interface BizInventoryBatchMapper {
 
     int decreaseForSale(@Param("id") Long id, @Param("quantity") Integer quantity);
 
-    int updatePurchaseDate(@Param("purchaseId") Long purchaseId, @Param("purchaseDate") LocalDate purchaseDate);
+    int updatePurchaseDate(@Param("purchaseId") Long purchaseId, @Param("purchaseDate") LocalDateTime purchaseDate);
 
     int deleteByPurchaseId(Long purchaseId);
 }

@@ -1,5 +1,6 @@
 package com.example.bookkeeping.purchase.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -10,7 +11,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +35,8 @@ public class SavePurchaseRequest {
     private String sellerAccount;
 
     @NotNull(message = "采购日期不能为空")
-    private LocalDate purchaseDate;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime purchaseDate;
 
     @DecimalMin(value = "0.00", message = "采购运费不能小于0")
     private BigDecimal freightAmount = BigDecimal.ZERO;

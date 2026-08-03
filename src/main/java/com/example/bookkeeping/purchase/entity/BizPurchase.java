@@ -14,7 +14,7 @@ public class BizPurchase {
     private String platformOrderNo;
     private String supplierName;
     private String sellerAccount;
-    private LocalDate purchaseDate;
+    private LocalDateTime purchaseDate;
     private Integer itemCount;
     private Integer purchaseStatus;
     private BigDecimal goodsAmount;

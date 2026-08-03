@@ -3,7 +3,6 @@ package com.example.bookkeeping.purchase.vo;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -15,7 +14,7 @@ public class PurchaseVO {
     private String productName;
     private String supplierName;
     private String sellerAccount;
-    private LocalDate purchaseDate;
+    private LocalDateTime purchaseDate;
     private Integer itemCount;
     private Integer purchaseStatus;
     private BigDecimal goodsAmount;
