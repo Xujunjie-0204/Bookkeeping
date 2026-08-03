@@ -5,13 +5,16 @@ import com.example.bookkeeping.common.page.PageResult;
 import com.example.bookkeeping.sale.dto.SaleQueryRequest;
 import com.example.bookkeeping.sale.dto.SaveSaleRequest;
 import com.example.bookkeeping.sale.dto.UpdateSaleRequest;
+import com.example.bookkeeping.sale.service.SaleOcrService;
 import com.example.bookkeeping.sale.service.SaleService;
 import com.example.bookkeeping.sale.vo.SaleItemVO;
+import com.example.bookkeeping.sale.vo.SaleOcrVO;
 import com.example.bookkeeping.sale.vo.SaleStockVO;
 import com.example.bookkeeping.sale.vo.SaleSummaryVO;
 import com.example.bookkeeping.sale.vo.SaleVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -22,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -32,9 +36,11 @@ import java.util.List;
 @Tag(name = "销售管理")
 public class SaleController {
     private final SaleService saleService;
+    private final SaleOcrService saleOcrService;
 
-    public SaleController(SaleService saleService) {
+    public SaleController(SaleService saleService, SaleOcrService saleOcrService) {
         this.saleService = saleService;
+        this.saleOcrService = saleOcrService;
     }
 
     @GetMapping
@@ -60,6 +66,12 @@ public class SaleController {
     public ApiResult<List<SaleStockVO>> availableStock(@RequestParam(required = false) String keyword,
                                                        @RequestParam(required = false) List<Long> productTypeIds) {
         return ApiResult.success(saleService.availableStock(keyword, productTypeIds));
+    }
+
+    @PostMapping(value = "/ocr", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "OCR识别销售订单截图")
+    public ApiResult<SaleOcrVO> ocr(@RequestParam("file") MultipartFile file) {
+        return ApiResult.success(saleOcrService.recognize(file));
     }
 
     @PostMapping
