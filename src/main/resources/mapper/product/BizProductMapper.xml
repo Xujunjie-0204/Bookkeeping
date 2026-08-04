@@ -101,7 +101,7 @@
         <if test="status != null">
           AND p.status = #{status}
         </if>
-        ORDER BY p.product_code ASC, p.id ASC
+        ORDER BY p.id ASC
     </select>
 
     <insert id="insert" parameterType="com.example.bookkeeping.product.entity.BizProduct"
