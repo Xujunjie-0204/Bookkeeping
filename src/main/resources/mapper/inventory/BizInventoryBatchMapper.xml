@@ -88,7 +88,7 @@
         <if test="warningOnly != null and warningOnly">
           HAVING COALESCE(SUM(b.available_quantity), 0) &lt;= p.warning_stock
         </if>
-        ORDER BY available_quantity ASC, p.id DESC
+        ORDER BY p.product_code ASC, p.id ASC
     </select>
 
     <select id="selectTotalSummary" resultMap="InventorySummaryResultMap">

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.bookkeeping.system.config.mapper.SysConfigMapper">
+
+    <resultMap id="SysConfigResultMap" type="com.example.bookkeeping.system.config.entity.SysConfig">
+        <id column="id" property="id"/>
+        <result column="config_code" property="configCode"/>
+        <result column="config_name" property="configName"/>
+        <result column="config_value" property="configValue"/>
+        <result column="status" property="status"/>
+        <result column="remark" property="remark"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+        <result column="deleted" property="deleted"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, config_code, config_name, config_value, status, remark, created_at, updated_at, deleted
+    </sql>
+
+    <select id="selectById" resultMap="SysConfigResultMap">
+        SELECT
+        <include refid="BaseColumns"/>
+        FROM sys_config
+        WHERE id = #{id}
+          AND deleted = 0
+        LIMIT 1
+    </select>
+
+    <select id="selectByConfigCode" resultMap="SysConfigResultMap">
+        SELECT
+        <include refid="BaseColumns"/>
+        FROM sys_config
+        WHERE config_code = #{configCode}
+          AND deleted = 0
+        LIMIT 1
+    </select>
+
+    <select id="selectAll" resultMap="SysConfigResultMap">
+        SELECT
+        <include refid="BaseColumns"/>
+        FROM sys_config
+        WHERE deleted = 0
+        ORDER BY id ASC
+    </select>
+
+    <insert id="insert" parameterType="com.example.bookkeeping.system.config.entity.SysConfig"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sys_config (
+            config_code, config_name, config_value, status, remark, created_at, updated_at, deleted
+        ) VALUES (
+            #{configCode}, #{configName}, #{configValue}, #{status}, #{remark}, NOW(), NOW(), 0
+        )
+    </insert>
+
+    <update id="update" parameterType="com.example.bookkeeping.system.config.entity.SysConfig">
+        UPDATE sys_config
+        SET config_code = #{configCode},
+            config_name = #{configName},
+            config_value = #{configValue},
+            status = #{status},
+            remark = #{remark},
+            updated_at = NOW()
+        WHERE id = #{id}
+          AND deleted = 0
+    </update>
+
+    <update id="deleteById">
+        UPDATE sys_config
+        SET deleted = 1,
+            updated_at = NOW()
+        WHERE id = #{id}
+          AND deleted = 0
+    </update>
+</mapper>

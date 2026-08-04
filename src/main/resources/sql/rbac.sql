@@ -95,7 +95,11 @@ INSERT INTO sys_menu (
   (8, 7, '新增角色', 'F', NULL, NULL, 'system:role:create', NULL, 10, 0, 1, NULL, NOW(), NOW(), 0),
   (9, 7, '修改角色', 'F', NULL, NULL, 'system:role:update', NULL, 20, 0, 1, NULL, NOW(), NOW(), 0),
   (10, 7, '删除角色', 'F', NULL, NULL, 'system:role:delete', NULL, 30, 0, 1, NULL, NOW(), NOW(), 0),
-  (11, 7, '分配权限', 'F', NULL, NULL, 'system:role:assign-menu', NULL, 40, 0, 1, NULL, NOW(), NOW(), 0)
+  (11, 7, '分配权限', 'F', NULL, NULL, 'system:role:assign-menu', NULL, 40, 0, 1, NULL, NOW(), NOW(), 0),
+  (27, 2, '系统配置', 'C', '/system/configs', 'ConfigManageView', 'system:config:view', 'Setting', 30, 1, 1, NULL, NOW(), NOW(), 0),
+  (28, 27, '新增系统配置', 'F', NULL, NULL, 'system:config:create', NULL, 10, 0, 1, NULL, NOW(), NOW(), 0),
+  (29, 27, '修改系统配置', 'F', NULL, NULL, 'system:config:update', NULL, 20, 0, 1, NULL, NOW(), NOW(), 0),
+  (30, 27, '删除系统配置', 'F', NULL, NULL, 'system:config:delete', NULL, 30, 0, 1, NULL, NOW(), NOW(), 0)
 ON DUPLICATE KEY UPDATE
   parent_id = VALUES(parent_id),
   menu_name = VALUES(menu_name),
@@ -114,3 +118,28 @@ INSERT IGNORE INTO sys_role_menu (role_id, menu_id, created_at)
 SELECT 1, id, NOW()
 FROM sys_menu
 WHERE deleted = 0;
+
+CREATE TABLE IF NOT EXISTS sys_config (
+  id BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键',
+  config_code VARCHAR(80) NOT NULL COMMENT '配置编码',
+  config_name VARCHAR(80) NOT NULL COMMENT '配置名称',
+  config_value JSON NOT NULL COMMENT '配置JSON',
+  status TINYINT NOT NULL DEFAULT 1 COMMENT '状态：1启用，0停用',
+  remark VARCHAR(500) DEFAULT NULL COMMENT '备注',
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  deleted TINYINT NOT NULL DEFAULT 0 COMMENT '逻辑删除：0否，1是',
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_sys_config_code (config_code)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='系统配置';
+
+INSERT INTO sys_config (
+  config_code, config_name, config_value, status, remark, created_at, updated_at, deleted
+) VALUES (
+  'employee_management', '员工管理', JSON_ARRAY('员工A', '员工B'), 1, '简单员工字符串集合', NOW(), NOW(), 0
+) ON DUPLICATE KEY UPDATE
+  config_name = VALUES(config_name),
+  status = VALUES(status),
+  remark = VALUES(remark),
+  updated_at = NOW(),
+  deleted = 0;
