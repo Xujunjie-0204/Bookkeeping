@@ -101,7 +101,11 @@
         <if test="status != null">
           AND p.status = #{status}
         </if>
-        ORDER BY p.product_code ASC, p.id ASC
+        ORDER BY
+          CASE WHEN p.product_code REGEXP '^[0-9]+$' THEN 0 ELSE 1 END ASC,
+          CASE WHEN p.product_code REGEXP '^[0-9]+$' THEN CAST(p.product_code AS UNSIGNED) ELSE NULL END ASC,
+          p.product_code ASC,
+          p.id ASC
     </select>
 
     <insert id="insert" parameterType="com.example.bookkeeping.product.entity.BizProduct"
