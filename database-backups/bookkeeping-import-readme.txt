@@ -1,15 +1,14 @@
-﻿bookkeeping 数据库导入说明
+bookkeeping 数据库导入说明
 
-SQL 文件：bookkeeping-full-20260806-230454.sql
-压缩包：bookkeeping-full-20260806-230454.sql.zip
+最新完整备份：bookkeeping-all-data-with-schema-20260807-011842.sql
+完整备份压缩包：bookkeeping-all-data-with-schema-20260807-011842.sql.zip
+仅数据备份：bookkeeping-business-data-only-20260807-011842.sql
 
-在家里电脑导入前，请先确认已经安装 MySQL，并且知道 root 密码。
-
-方式一：直接导入 SQL
-mysql --default-character-set=utf8mb4 -uroot -p < "bookkeeping-full-20260806-230454.sql"
-
-方式二：如果当前已有 bookkeeping 库并希望完全覆盖
+完整覆盖导入：
 mysql -uroot -p -e "DROP DATABASE IF EXISTS bookkeeping;"
-mysql --default-character-set=utf8mb4 -uroot -p < "bookkeeping-full-20260806-230454.sql"
+mysql --default-character-set=utf8mb4 -uroot -p < "bookkeeping-all-data-with-schema-20260807-011842.sql"
 
-说明：这个 SQL 使用 --databases 导出，里面包含 CREATE DATABASE / USE bookkeeping。
+仅覆盖表内数据（要求目标库已有相同表结构）：
+mysql --default-character-set=utf8mb4 -uroot -p bookkeeping < "bookkeeping-business-data-only-20260807-011842.sql"
+
+说明：完整备份包含 CREATE DATABASE、全部 15 张表的结构和全部数据，共 1061 行数据。
