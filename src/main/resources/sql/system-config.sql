@@ -25,6 +25,17 @@ INSERT INTO sys_config (
   updated_at = NOW(),
   deleted = 0;
 
+INSERT INTO sys_config (
+  config_code, config_name, config_value, status, remark, created_at, updated_at, deleted
+) VALUES (
+  'express_company', '快递配置', JSON_ARRAY('韵达', '京东', '顺丰'), 1, '销售订单快递公司字符串集合', NOW(), NOW(), 0
+) ON DUPLICATE KEY UPDATE
+  config_name = VALUES(config_name),
+  status = VALUES(status),
+  remark = VALUES(remark),
+  updated_at = NOW(),
+  deleted = 0;
+
 INSERT INTO sys_menu (
   id, parent_id, menu_name, menu_type, path, component, permission_code,
   icon, sort_order, visible, status, remark, created_at, updated_at, deleted

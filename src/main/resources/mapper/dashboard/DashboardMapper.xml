@@ -225,7 +225,7 @@
           <include refid="SaleProductFilterSql"/>
         GROUP BY p.id, p.product_name
         ORDER BY quantity DESC, sale_amount DESC
-        LIMIT 10
+        LIMIT 30
     </select>
 
     <select id="selectProductProfitTop" resultMap="ProductTopResultMap">
@@ -245,7 +245,7 @@
           <include refid="SaleProductFilterSql"/>
         GROUP BY p.id, p.product_name
         ORDER BY profit_amount DESC, sale_amount DESC
-        LIMIT 10
+        LIMIT 30
     </select>
 
     <select id="selectInventoryWarning" resultMap="InventoryWarningResultMap">
